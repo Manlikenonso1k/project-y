@@ -57,6 +57,21 @@
                 </div>
             </form>
 
+            @if($product->name === 'Wireless Headphones Pro')
+                <div class="mb-4">
+                    <blockonomics-pay-button
+                      uid="f08fdbe86b204569"
+                      label="Pay with Crypto">
+                    </blockonomics-pay-button>
+                    <div class="mt-3">
+                        <a href="{{ route('payment.create') }}" class="btn btn-success w-100">
+                            Open Crypto QR Payment
+                        </a>
+                        <small class="text-muted d-block mt-2">If the embedded Blockonomics button does not render, use this fallback to open your payment QR page.</small>
+                    </div>
+                </div>
+            @endif
+
             <!-- Product Info -->
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -108,3 +123,9 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+    @if($product->name === 'Wireless Headphones Pro')
+        <script src="https://www.blockonomics.co/js/pay_button.js"></script>
+    @endif
+@endpush

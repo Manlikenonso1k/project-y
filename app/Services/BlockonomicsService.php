@@ -26,11 +26,13 @@ class BlockonomicsService
         }
 
         try {
-            // Blockonomics accepts bearer-auth for merchant APIs.
+            // Primary mode follows Blockonomics examples for /api/new_address.
             $response = $this->client->post('https://www.blockonomics.co/api/new_address', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $apiKey,
                     'Accept' => 'application/json',
+                ],
+                'form_params' => [
+                    'api_key' => $apiKey,
                 ],
                 'http_errors' => false,
                 'timeout' => 15,
@@ -39,18 +41,58 @@ class BlockonomicsService
             $status = $response->getStatusCode();
             $payload = json_decode((string) $response->getBody(), true);
 
-            if ($status < 200 || $status >= 300 || ! is_array($payload) || empty($payload['address'])) {
-                $message = is_array($payload) && isset($payload['message'])
-                    ? (string) $payload['message']
-                    : 'Unable to generate BTC address from Blockonomics.';
-
-                throw new RuntimeException($message);
+            if ($this->hasAddress($status, $payload)) {
+                return (string) $payload['address'];
             }
 
-            return (string) $payload['address'];
+            // Fallback for environments/accounts configured for bearer-style auth.
+            $fallbackResponse = $this->client->post('https://www.blockonomics.co/api/new_address', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Accept' => 'application/json',
+                ],
+                'http_errors' => false,
+                'timeout' => 15,
+            ]);
+
+            $fallbackStatus = $fallbackResponse->getStatusCode();
+            $fallbackPayload = json_decode((string) $fallbackResponse->getBody(), true);
+
+            if ($this->hasAddress($fallbackStatus, $fallbackPayload)) {
+                return (string) $fallbackPayload['address'];
+            }
+
+            $firstError = $this->extractErrorMessage($status, $payload);
+            $fallbackError = $this->extractErrorMessage($fallbackStatus, $fallbackPayload);
+
+            throw new RuntimeException("Blockonomics new_address failed. Primary: {$firstError}. Fallback: {$fallbackError}.");
         } catch (GuzzleException $exception) {
             throw new RuntimeException('Blockonomics request failed: ' . $exception->getMessage(), previous: $exception);
         }
+    }
+
+    private function hasAddress(int $status, mixed $payload): bool
+    {
+        return $status >= 200
+            && $status < 300
+            && is_array($payload)
+            && ! empty($payload['address'])
+            && is_string($payload['address']);
+    }
+
+    private function extractErrorMessage(int $status, mixed $payload): string
+    {
+        if (is_array($payload)) {
+            foreach (['message', 'error', 'detail', 'response'] as $key) {
+                if (! empty($payload[$key]) && is_string($payload[$key])) {
+                    return "HTTP {$status}: {$payload[$key]}";
+                }
+            }
+
+            return 'HTTP ' . $status . ': ' . json_encode($payload);
+        }
+
+        return 'HTTP ' . $status . ': Empty or non-JSON response from Blockonomics.';
     }
 
     /**
@@ -60,6 +102,6 @@ class BlockonomicsService
     {
         $bitcoinUri = 'bitcoin:' . $address;
 
-        return 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . urlencode($bitcoinUri);
+        return 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($bitcoinUri);
     }
 }

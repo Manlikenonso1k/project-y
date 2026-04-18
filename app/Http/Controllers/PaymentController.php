@@ -29,14 +29,22 @@ class PaymentController extends Controller
                 'errorMessage' => null,
             ]);
         } catch (\Throwable $exception) {
+            $message = $exception->getMessage();
+
             Log::error('Blockonomics payment address generation failed.', [
-                'message' => $exception->getMessage(),
+                'message' => $message,
             ]);
+
+            $errorMessage = 'Unable to generate a payment address right now. Please try again in a moment.';
+
+            if (str_contains($message, 'No store found') || str_contains($message, 'code":1040')) {
+                $errorMessage = 'Blockonomics store is not configured yet. Create and activate a store in Blockonomics, attach your wallet/xPub, then use that store API key in BLOCKONOMICS_API_KEY.';
+            }
 
             return view('payment', [
                 'address' => null,
                 'qrCodeUrl' => null,
-                'errorMessage' => 'Unable to generate a payment address right now. Please try again in a moment.',
+                'errorMessage' => $errorMessage,
             ]);
         }
     }
