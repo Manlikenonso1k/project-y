@@ -1,0 +1,119 @@
+# Symfony\Component\Routing\Exception\RouteNotFoundException - Internal Server Error
+
+Route [login] not defined.
+
+PHP 8.5.1
+Laravel 13.5.0
+127.0.0.1:8000
+
+## Stack Trace
+
+0 - vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:536
+1 - vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:870
+2 - resources\views\layout.blade.php:141
+3 - vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php:123
+4 - vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php:124
+5 - vendor\laravel\framework\src\Illuminate\View\Engines\PhpEngine.php:57
+6 - vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php:22
+7 - vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php:76
+8 - vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php:10
+9 - vendor\laravel\framework\src\Illuminate\View\View.php:208
+10 - vendor\laravel\framework\src\Illuminate\View\View.php:191
+11 - vendor\laravel\framework\src\Illuminate\View\View.php:160
+12 - resources\views\index.blade.php:92
+13 - vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php:123
+14 - vendor\laravel\framework\src\Illuminate\Filesystem\Filesystem.php:124
+15 - vendor\laravel\framework\src\Illuminate\View\Engines\PhpEngine.php:57
+16 - vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php:22
+17 - vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php:76
+18 - vendor\livewire\livewire\src\Mechanisms\ExtendBlade\ExtendedCompilerEngine.php:10
+19 - vendor\laravel\framework\src\Illuminate\View\View.php:208
+20 - vendor\laravel\framework\src\Illuminate\View\View.php:191
+21 - vendor\laravel\framework\src\Illuminate\View\View.php:160
+22 - vendor\laravel\framework\src\Illuminate\Http\Response.php:78
+23 - vendor\laravel\framework\src\Illuminate\Http\Response.php:34
+24 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:939
+25 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:906
+26 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:821
+27 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:180
+28 - vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php:52
+29 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+30 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestForgery.php:104
+31 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+32 - vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php:48
+33 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+34 - vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php:120
+35 - vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php:63
+36 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+37 - vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php:36
+38 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+39 - vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php:74
+40 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+41 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:137
+42 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:821
+43 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:800
+44 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:764
+45 - vendor\laravel\framework\src\Illuminate\Routing\Router.php:753
+46 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:200
+47 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:180
+48 - vendor\livewire\livewire\src\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware.php:19
+49 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+50 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php:21
+51 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php:31
+52 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+53 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php:21
+54 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php:51
+55 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+56 - vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php:27
+57 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+58 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php:109
+59 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+60 - vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php:61
+61 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+62 - vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php:58
+63 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+64 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php:22
+65 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+66 - vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php:28
+67 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:219
+68 - vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php:137
+69 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:175
+70 - vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php:144
+71 - vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1220
+72 - public\index.php:20
+73 - vendor\laravel\framework\src\Illuminate\Foundation\resources\server.php:23
+
+
+## Request
+
+GET /
+
+## Headers
+
+* **host**: 127.0.0.1:8000
+* **connection**: keep-alive
+* **cache-control**: max-age=0
+* **upgrade-insecure-requests**: 1
+* **user-agent**: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.116.0 Chrome/142.0.7444.265 Electron/39.8.7 Safari/537.36
+* **accept**: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+* **sec-fetch-site**: none
+* **sec-fetch-mode**: navigate
+* **sec-fetch-user**: ?1
+* **sec-fetch-dest**: document
+* **accept-encoding**: gzip, deflate, br, zstd
+* **accept-language**: en-US
+* **cookie**: XSRF-TOKEN=eyJpdiI6ImxWRERQRytKRTdhd1MwVzlFL3RtRmc9PSIsInZhbHVlIjoiVXlFUys3elhaU3JHbzVzeWtqTncvSW01YVJlM3RVSXZYUEJaY0xlK3g5MTFGUUUvNEQ2YVpGZm5rclV5eHJZS25xMkhPVVZ0cmNhQVB5WXE0ZStTVGNtVVo2ZGVEYmk0ZWMwb09vOTcyMXM2dHFhTmdKcVR1RHFvVHVVclVBeE8iLCJtYWMiOiI5MDliYTZiYmZhOTAzZmU3NzRiMjk4Y2Y2YmI5NGYyMzQ5YWIyNzRiYTRkNzAwNTI0MTczN2U2MTY4ZjRjNDBiIiwidGFnIjoiIn0%3D; laravel-session=eyJpdiI6IlpFWTAwTnVrZmFnUXRBUktBNGJHOVE9PSIsInZhbHVlIjoiWnN5TDhUcGRQVG5oQUhHQWdJSXF3NHVUL2prUXlmQlJBbTVWSWtybnovZEwvNldxc2xsNFhnYStLNTRPS1Q5N3VBWjMycU83UUh2YmhUWno1QU1MaTZTVjRDSUlvcGlWK1EvbTNPTllzdENKVHZGN1NhTmxXbEFyVzZsMVVkQ20iLCJtYWMiOiI4OWIwNWYxOTQyOGNjMzc2NjlhOWM2NTc4OTdhMzlkMWQ4NjUzZDkxN2UwZGMzYjkxMWRlNGIzNjEwM2JmNjljIiwidGFnIjoiIn0%3D
+
+## Route Context
+
+controller: App\Http\Controllers\HomeController@index
+route name: home
+middleware: web
+
+## Route Parameters
+
+No route parameter data available.
+
+## Database Queries
+
+* sqlite - select * from "sessions" where "id" = '8wjSzKds6PL8XlC4YffoMD4a3JGfbTRF3uPSVkg7' limit 1 (0.86 ms)
