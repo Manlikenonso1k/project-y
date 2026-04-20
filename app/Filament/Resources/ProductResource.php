@@ -11,6 +11,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -42,7 +43,7 @@ class ProductResource extends Resource
                     ->relationship('category', 'name')
                     ->required(),
                 
-                Forms\Components\Section::make('Pricing')
+                Section::make('Pricing')
                     ->schema([
                         Forms\Components\TextInput::make('price')
                             ->numeric()
@@ -58,7 +59,7 @@ class ProductResource extends Resource
                     ])
                     ->columns(2),
                 
-                Forms\Components\Section::make('Inventory & Media')
+                Section::make('Inventory & Media')
                     ->schema([
                         Forms\Components\TextInput::make('quantity')
                             ->numeric()
@@ -68,6 +69,7 @@ class ProductResource extends Resource
                         
                         Forms\Components\FileUpload::make('image')
                             ->image()
+                            ->disk('public')
                             ->directory('products')
                             ->previewable(true)
                             ->openable()
@@ -77,7 +79,7 @@ class ProductResource extends Resource
                     ])
                     ->columns(2),
                 
-                Forms\Components\Section::make('Status')
+                Section::make('Status')
                     ->schema([
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Featured Product')
