@@ -8,10 +8,14 @@ set -Eeuo pipefail
 #
 # Optional environment overrides:
 #   APP_DIR=/var/www/ecommerce-laravel PHP_VERSION=8.3 ENABLE_CLEARNET_TLS=false ./dependencies.sh
+#   APT_UPDATE_IF_NEEDED=true ./dependencies.sh
+#   FORCE_APT_UPDATE=false ./dependencies.sh
 
 APP_DIR="${APP_DIR:-/var/www/ecommerce-laravel}"
 PHP_VERSION="${PHP_VERSION:-8.3}"
 ENABLE_CLEARNET_TLS="${ENABLE_CLEARNET_TLS:-false}"
+APT_UPDATE_IF_NEEDED="${APT_UPDATE_IF_NEEDED:-true}"
+FORCE_APT_UPDATE="${FORCE_APT_UPDATE:-false}"
 
 if ! command -v apt >/dev/null 2>&1; then
   echo "This script is intended for Ubuntu/Debian servers with apt." >&2
@@ -29,20 +33,57 @@ run() {
   eval "$@"
 }
 
-echo "==> Installing OS dependencies"
-run "$SUDO apt update"
-run "$SUDO apt install -y \
-  tor \
-  nginx \
-  mysql-server \
-  php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-mysql php${PHP_VERSION}-mbstring php${PHP_VERSION}-xml php${PHP_VERSION}-curl php${PHP_VERSION}-zip php${PHP_VERSION}-bcmath php${PHP_VERSION}-intl \
-  composer \
-  unzip git curl \
-  fail2ban ufw unattended-upgrades"
+echo "==> Checking OS dependencies"
+REQUIRED_PACKAGES=(
+  tor
+  nginx
+  mysql-server
+  "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-mysql" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" "php${PHP_VERSION}-curl" "php${PHP_VERSION}-zip" "php${PHP_VERSION}-bcmath" "php${PHP_VERSION}-intl"
+  composer
+  unzip git curl
+  fail2ban ufw unattended-upgrades
+)
+
+MISSING_PACKAGES=()
+for pkg in "${REQUIRED_PACKAGES[@]}"; do
+  if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+    MISSING_PACKAGES+=("$pkg")
+  fi
+done
+
+if [[ "$FORCE_APT_UPDATE" == "true" ]]; then
+  echo "==> Running apt update (forced)"
+  run "$SUDO apt update"
+elif [[ "${#MISSING_PACKAGES[@]}" -gt 0 && "$APT_UPDATE_IF_NEEDED" == "true" ]]; then
+  echo "==> Running apt update (missing packages detected)"
+  run "$SUDO apt update"
+else
+  echo "==> Skipping apt update (no missing packages or update disabled)"
+fi
+
+if [[ "${#MISSING_PACKAGES[@]}" -gt 0 ]]; then
+  echo "==> Installing missing OS dependencies: ${MISSING_PACKAGES[*]}"
+  run "$SUDO apt install -y ${MISSING_PACKAGES[*]}"
+else
+  echo "==> All required OS dependencies are already installed"
+fi
 
 if [[ "$ENABLE_CLEARNET_TLS" == "true" ]]; then
-  echo "==> Installing optional Certbot packages"
-  run "$SUDO apt install -y certbot python3-certbot-nginx"
+  OPTIONAL_TLS_PACKAGES=(certbot python3-certbot-nginx)
+  MISSING_TLS_PACKAGES=()
+
+  for pkg in "${OPTIONAL_TLS_PACKAGES[@]}"; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+      MISSING_TLS_PACKAGES+=("$pkg")
+    fi
+  done
+
+  if [[ "${#MISSING_TLS_PACKAGES[@]}" -gt 0 ]]; then
+    echo "==> Installing optional Certbot packages: ${MISSING_TLS_PACKAGES[*]}"
+    run "$SUDO apt install -y ${MISSING_TLS_PACKAGES[*]}"
+  else
+    echo "==> Optional Certbot packages already installed"
+  fi
 fi
 
 echo "==> Enabling core services"
