@@ -28,6 +28,8 @@ set_sudo() {
 load_defaults() {
   PROJECT_NAME="${PROJECT_NAME:-projectx}"
   REPO_URL="${REPO_URL:-https://github.com/Manlikenonso1k/project-x.git}"
+  USE_LOCAL_SOURCE="${USE_LOCAL_SOURCE:-auto}"
+  LOCAL_SOURCE_DIR="${LOCAL_SOURCE_DIR:-}"
   PROJECT_DIR="${PROJECT_DIR:-/var/www/${PROJECT_NAME}}"
   APP_DIR="${APP_DIR:-${PROJECT_DIR}/app}"
   SERVICE_FILE="${SERVICE_FILE:-/etc/systemd/system/${PROJECT_NAME}.service}"
@@ -45,6 +47,10 @@ print_summary() {
   log "PROJECT_DIR=${PROJECT_DIR}"
   log "APP_DIR=${APP_DIR}"
   log "REPO_URL=${REPO_URL}"
+  log "USE_LOCAL_SOURCE=${USE_LOCAL_SOURCE}"
+  if [[ -n "${LOCAL_SOURCE_DIR}" ]]; then
+    log "LOCAL_SOURCE_DIR=${LOCAL_SOURCE_DIR}"
+  fi
   log "TOR_DIR=${TOR_DIR}"
   log "APP_PORT=${APP_PORT}"
   log "RUN_USER=${RUN_USER}"
