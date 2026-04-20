@@ -15,7 +15,11 @@ class Order extends Model
         'tax',
         'shipping',
         'total',
+        'btc_address',
+        'expected_btc',
         'status',
+        'payment_status',
+        'txid',
         'first_name',
         'last_name',
         'email',
@@ -33,6 +37,7 @@ class Order extends Model
         'tax' => 'decimal:2',
         'shipping' => 'decimal:2',
         'total' => 'decimal:2',
+        'expected_btc' => 'decimal:8',
     ];
 
     public function user(): BelongsTo

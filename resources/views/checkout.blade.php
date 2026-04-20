@@ -142,9 +142,7 @@
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="fas fa-check me-2"></i> Place Order
                     </button>
-                    <a href="{{ route('payment.create') }}" class="btn btn-dark btn-lg w-100 mt-2">
-                        <i class="fas fa-bitcoin me-2"></i> Pay with Bitcoin
-                    </a>
+                    <small class="text-muted d-block mt-2">Bitcoin payment is generated per order after you place the order.</small>
                     <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary btn-lg w-100 mt-2">Back to Cart</a>
                 </div>
             </form>

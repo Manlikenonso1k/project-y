@@ -97,6 +97,7 @@
 
                     <!-- Action Buttons -->
                     <div class="btn-group" role="group">
+                        <a href="{{ route('payment.order', $order) }}" class="btn btn-dark">Pay with Bitcoin</a>
                         <a href="{{ route('home') }}" class="btn btn-outline-primary">Back to Home</a>
                         <a href="{{ route('shop.index') }}" class="btn btn-primary">Continue Shopping</a>
                     </div>

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProcessCheckoutRequest;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
-    public function show(): View
+    public function show(): View|RedirectResponse
     {
-        if (auth()->check()) {
-            $cart = Cart::where('user_id', auth()->id())->first();
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
         } else {
             $cart = Cart::where('session_id', session()->getId())->first();
         }
@@ -29,22 +30,10 @@ class CheckoutController extends Controller
         return view('checkout', compact('cart', 'items', 'total'));
     }
 
-    public function process(Request $request): RedirectResponse
+    public function process(ProcessCheckoutRequest $request): RedirectResponse
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'state' => 'required|string',
-            'postal_code' => 'required|string',
-            'country' => 'required|string',
-        ]);
-
-        if (auth()->check()) {
-            $cart = Cart::where('user_id', auth()->id())->first();
+        if (Auth::check()) {
+            $cart = Cart::where('user_id', Auth::id())->first();
         } else {
             $cart = Cart::where('session_id', session()->getId())->first();
         }
@@ -59,7 +48,7 @@ class CheckoutController extends Controller
         $total = $subtotal + $tax + $shipping;
 
         $order = Order::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'order_number' => 'ORD-' . time(),
             'subtotal' => $subtotal,
             'tax' => $tax,
@@ -89,12 +78,18 @@ class CheckoutController extends Controller
         }
 
         $cart->items()->delete();
+        session()->put('last_order_id', $order->id);
 
         return redirect()->route('order.success', $order)->with('success', 'Order placed successfully!');
     }
 
     public function success(Order $order): View
     {
+        $isOwner = Auth::check() && $order->user_id === Auth::id();
+        $isGuestOrderInSession = ! Auth::check() && (int) session('last_order_id') === $order->id;
+
+        abort_unless($isOwner || $isGuestOrderInSession, 403);
+
         return view('order-success', compact('order'));
     }
 }

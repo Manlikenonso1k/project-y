@@ -1,0 +1,345 @@
+Production Security Hardening Playbook - Laravel Ecommerce + Filament
+
+1. LARAVEL APPLICATION SECURITY
+
+Implemented in this codebase now
+
+A) Environment security
+- Updated defaults in .env.example:
+  - APP_ENV=production
+  - APP_DEBUG=false
+  - APP_URL=https://your-domain.com
+  - LOG_LEVEL=warning
+  - FILESYSTEM_DISK=public
+  - SESSION_ENCRYPT=true
+  - SESSION_SECURE_COOKIE=true
+  - SESSION_HTTP_ONLY=true
+  - SESSION_SAME_SITE=lax
+- Why: prevents debug leakage, enforces secure cookies, and avoids writing uploads to private disk unintentionally.
+
+B) Security headers + HTTPS behavior
+- Added middleware: app/Http/Middleware/SecurityHeaders.php
+- Registered globally in bootstrap/app.php
+- Headers added:
+  - Content-Security-Policy
+  - X-Frame-Options: SAMEORIGIN
+  - X-Content-Type-Options: nosniff
+  - Referrer-Policy: strict-origin-when-cross-origin
+  - Permissions-Policy: camera=(), microphone=(), geolocation=()
+  - HSTS when HTTPS + production
+- Added URL::forceScheme('https') in production in app/Providers/AppServiceProvider.php
+- Why: reduces clickjacking, MIME sniffing, data leakage, and downgrade attacks.
+
+C) Authentication + brute force protection (Filament admin)
+- Added middleware: app/Http/Middleware/ThrottleAdminAuthAttempts.php
+- Registered globally in bootstrap/app.php
+- Limits repeated admin login attempts (including Livewire login submit path)
+- Logs suspicious/throttled auth attempts
+- Why: reduces credential stuffing and brute-force success rate.
+
+D) Authorization hardening (admin vs users)
+- Added role field migration:
+  - database/migrations/2026_04_20_000008_add_is_admin_to_users_table.php
+- Updated user model:
+  - app/Models/User.php implements FilamentUser
+  - canAccessPanel() now requires is_admin=true
+- Updated seeder:
+  - database/seeders/DatabaseSeeder.php marks itachi@example.com as admin
+- Why: prevents regular users from entering admin panel.
+
+E) Input validation + anti-privilege-escalation
+- Added Form Requests:
+  - app/Http/Requests/AddToCartRequest.php
+  - app/Http/Requests/UpdateCartItemRequest.php
+  - app/Http/Requests/ProcessCheckoutRequest.php
+- Updated controllers to use Form Requests and ownership checks:
+  - app/Http/Controllers/CartController.php
+  - app/Http/Controllers/CheckoutController.php
+- Added checkout input sanitization in prepareForValidation()
+- Added cart item ownership enforcement (403 on cross-cart modification)
+- Added order success page ownership/session guard (403 on unauthorized access)
+- Why: prevents horizontal privilege escalation and enforces validated trusted input.
+
+F) Route-level rate limiting
+- Added named limiters in app/Providers/AppServiceProvider.php:
+  - cart: 30/min
+  - checkout: 10/min
+  - payment: 6/min
+- Applied in routes/web.php on cart/checkout/payment mutation endpoints
+- Why: limits abuse on high-risk business actions.
+
+G) File upload security
+- Hardened Filament product image upload in app/Filament/Resources/ProductResource.php:
+  - disk('public')
+  - acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+  - maxSize(5120)
+- Why: reduces malicious upload risk and enforces predictable file handling.
+
+H) Dependency audit and production package posture
+- Run: composer audit --locked
+- Current status: no known advisories
+- Production install command:
+  - composer install --no-dev --optimize-autoloader --classmap-authoritative
+- Why: keeps vulnerable packages out and minimizes production attack surface.
+
+I) Secret handling and rotation (exact)
+- Rotate APP_KEY safely during maintenance window:
+  1) php artisan down
+  2) backup DB + sessions
+  3) php artisan key:generate --show
+  4) update APP_KEY in secret store/.env
+  5) php artisan config:clear && php artisan config:cache
+  6) php artisan up
+- Blockonomics/API keys:
+  - Store only in environment secrets (not in git)
+  - Rotate immediately if ever exposed
+- Why: stolen keys allow data decryption and account abuse.
+
+J) 2FA for Filament admin (recommended next hardening)
+- Your app currently has role-gated admin access.
+- Add enforced admin 2FA with one of these:
+  - Filament plugin route (preferred for admin UX)
+  - Fortify + TOTP and enforce for admin role
+- Minimum enforcement policy:
+  - Admin cannot access panel unless 2FA enrollment complete
+- Why: password compromise alone must not grant admin access.
+
+2. SERVER / INFRASTRUCTURE HARDENING (Ubuntu + Nginx + MySQL)
+
+A) Network and SSH
+
+Commands:
+- sudo ufw default deny incoming
+- sudo ufw default allow outgoing
+- sudo ufw allow 22/tcp
+- sudo ufw allow 80/tcp
+- sudo ufw allow 443/tcp
+- sudo ufw enable
+- sudo ufw status verbose
+
+Lock down SSH (/etc/ssh/sshd_config):
+- PermitRootLogin no
+- PasswordAuthentication no
+- PubkeyAuthentication yes
+- MaxAuthTries 3
+- LoginGraceTime 30
+- AllowUsers deploy
+
+Apply:
+- sudo systemctl restart sshd
+
+Why: removes password spray and root direct-entry paths.
+
+B) Nginx hardened vhost
+
+Use this server block (/etc/nginx/sites-available/ecommerce):
+
+server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com www.your-domain.com;
+
+    root /var/www/ecommerce-laravel/public;
+    index index.php;
+
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    server_tokens off;
+    autoindex off;
+
+    location ~ /\.(?!well-known).* { deny all; }
+    location ~* /(\.env|composer\.(json|lock)|artisan|phpunit\.xml|README\.md|storage/logs|storage/framework|vendor) { deny all; }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp)$ {
+        expires 30d;
+        access_log off;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+    }
+
+    limit_req_zone $binary_remote_addr zone=global:10m rate=15r/s;
+    limit_req zone=global burst=30 nodelay;
+}
+
+Enable and test:
+- sudo ln -s /etc/nginx/sites-available/ecommerce /etc/nginx/sites-enabled/
+- sudo nginx -t
+- sudo systemctl reload nginx
+
+Why: serves only /public, blocks sensitive paths, enforces HTTPS and sane rate limits.
+
+C) PHP-FPM hardening (/etc/php/8.3/fpm/php.ini)
+- expose_php = Off
+- display_errors = Off
+- log_errors = On
+- allow_url_fopen = Off
+- allow_url_include = Off
+- file_uploads = On
+- upload_max_filesize = 5M
+- post_max_size = 8M
+- max_file_uploads = 10
+- session.cookie_httponly = 1
+- session.cookie_secure = 1
+- session.cookie_samesite = Lax
+- disable_functions = exec,passthru,shell_exec,system,proc_open,popen,show_source
+- open_basedir = /var/www/ecommerce-laravel/:/tmp/
+
+Restart:
+- sudo systemctl restart php8.3-fpm
+
+Why: narrows PHP runtime abuse if attacker reaches code execution path.
+
+D) MySQL hardening
+- Bind MySQL to localhost in /etc/mysql/mysql.conf.d/mysqld.cnf:
+  - bind-address = 127.0.0.1
+- Run:
+  - sudo mysql_secure_installation
+
+Least privilege DB user:
+CREATE USER 'ecom_app'@'127.0.0.1' IDENTIFIED BY 'LONG_RANDOM_PASSWORD';
+CREATE DATABASE ecommerce CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP ON ecommerce.* TO 'ecom_app'@'127.0.0.1';
+FLUSH PRIVILEGES;
+
+Why: blocks remote DB probing and limits blast radius if app creds leak.
+
+E) TLS automation
+- sudo apt install certbot python3-certbot-nginx -y
+- sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+- sudo systemctl status certbot.timer
+- sudo certbot renew --dry-run
+
+Why: valid cert lifecycle with auto-renew prevents expiry and MITM downgrade.
+
+F) File permissions and process controls
+- sudo chown -R www-data:www-data /var/www/ecommerce-laravel
+- sudo find /var/www/ecommerce-laravel -type f -exec chmod 644 {} \;
+- sudo find /var/www/ecommerce-laravel -type d -exec chmod 755 {} \;
+- sudo chmod -R ug+rwx /var/www/ecommerce-laravel/storage /var/www/ecommerce-laravel/bootstrap/cache
+
+Queue worker via Supervisor (/etc/supervisor/conf.d/ecommerce-worker.conf):
+[program:ecommerce-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/ecommerce-laravel/artisan queue:work --sleep=3 --tries=3 --timeout=90
+autostart=true
+autorestart=true
+numprocs=1
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/ecommerce-laravel/storage/logs/queue-worker.log
+stopwaitsecs=3600
+
+Apply:
+- sudo supervisorctl reread
+- sudo supervisorctl update
+- sudo supervisorctl start ecommerce-worker:*
+
+Why: stable queue processing and controlled process privileges.
+
+G) Fail2ban + abuse controls
+- sudo apt install fail2ban -y
+- Create /etc/fail2ban/jail.d/nginx-auth.conf
+
+[nginx-http-auth]
+enabled = true
+port = http,https
+logpath = /var/log/nginx/error.log
+maxretry = 5
+findtime = 600
+bantime = 3600
+
+Apply:
+- sudo systemctl restart fail2ban
+- sudo fail2ban-client status
+
+Optional WAF:
+- Cloudflare WAF (managed rules) or Nginx ModSecurity CRS
+
+Why: actively blocks repeated probing and bot abuse.
+
+H) Automatic security updates and patch strategy
+- sudo apt install unattended-upgrades -y
+- sudo dpkg-reconfigure --priority=low unattended-upgrades
+- Monthly patch window:
+  - OS packages
+  - PHP minor updates
+  - composer update on staging + tests
+  - deploy with rollback plan
+
+Why: most real compromises exploit known, unpatched CVEs.
+
+I) Encrypted offsite backups
+- Use restic + object storage:
+  - export RESTIC_REPOSITORY=s3:s3.amazonaws.com/your-bucket/ecommerce-backups
+  - export RESTIC_PASSWORD=strong_repo_password
+  - restic init
+  - restic backup /var/www/ecommerce-laravel /var/lib/mysql
+  - restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune
+- Schedule via cron/systemd timer
+- Restore drill quarterly
+
+Why: ransomware or destructive compromise without tested backup = permanent loss.
+
+3. BONUS
+
+A) Deployment checklist (production)
+- APP_ENV=production and APP_DEBUG=false
+- php artisan config:cache && php artisan route:cache && php artisan view:cache
+- composer install --no-dev --optimize-autoloader --classmap-authoritative
+- php artisan migrate --force
+- php artisan storage:link
+- Verify admin account has is_admin=1
+- Verify HTTPS redirect and certificate chain
+- Verify CSP/XFO/HSTS headers present
+- Verify queue worker healthy in supervisorctl status
+- Verify backup job and fail2ban are active
+
+B) Quick vulnerability scan checklist
+- Dependency scan: composer audit --locked
+- Secret scan: ensure no keys in git history
+- HTTP headers check:
+  - curl -I https://your-domain.com
+- TLS check:
+  - testssl.sh your-domain.com
+- Nginx config check:
+  - sudo nginx -t
+- File permission check:
+  - writable dirs only storage and bootstrap/cache
+- Access control check:
+  - regular user cannot access /admin
+
+C) Common mistakes that get Laravel apps hacked
+- APP_DEBUG=true in production
+- .env exposed via bad Nginx root/path rules
+- Using root DB user in production
+- No login throttling and no 2FA on admin
+- Uploading files to webroot without MIME/size controls
+- Trusting route model binding without ownership authorization checks
+- Running composer install with dev dependencies in production
+- No patch cadence and no tested backups

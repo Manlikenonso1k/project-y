@@ -20,15 +20,16 @@ Route::get('/category/{category:slug}', [ProductController::class, 'byCategory']
 
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/{cartItem}/update', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/{cartItem}/remove', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/cart/add', [CartController::class, 'add'])->middleware('throttle:cart')->name('cart.add');
+Route::post('/cart/{cartItem}/update', [CartController::class, 'update'])->middleware('throttle:cart')->name('cart.update');
+Route::delete('/cart/{cartItem}/remove', [CartController::class, 'remove'])->middleware('throttle:cart')->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->middleware('throttle:cart')->name('cart.clear');
 
 // Checkout Routes
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:checkout')->name('checkout.process');
 Route::get('/order/{order}/success', [CheckoutController::class, 'success'])->name('order.success');
 
 // Bitcoin Payment Route
-Route::get('/create-payment', [PaymentController::class, 'createPayment'])->name('payment.create');
+Route::get('/create-payment', [PaymentController::class, 'createPayment'])->middleware('throttle:payment')->name('payment.create');
+Route::get('/order/{order}/payment', [PaymentController::class, 'showOrderPayment'])->middleware('throttle:payment')->name('payment.order');

@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Cart;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 
@@ -22,6 +26,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
+        RateLimiter::for('cart', function (Request $request) {
+            return Limit::perMinute(30)->by((string) ($request->user()?->id ?? $request->ip()));
+        });
+
+        RateLimiter::for('checkout', function (Request $request) {
+            return Limit::perMinute(10)->by((string) ($request->user()?->id ?? $request->ip()));
+        });
+
+        RateLimiter::for('payment', function (Request $request) {
+            return Limit::perMinute(6)->by((string) ($request->user()?->id ?? $request->ip()));
+        });
+
         View::composer('*', function ($view): void {
             $cartCount = 0;
 

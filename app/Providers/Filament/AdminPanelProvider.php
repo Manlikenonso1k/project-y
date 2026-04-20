@@ -7,6 +7,8 @@ use App\Filament\Widgets\DashboardOverviewWidget;
 use App\Filament\Widgets\MostClickedProductsWidget;
 use App\Filament\Widgets\OrdersByCustomerWidget;
 use App\Filament\Widgets\SalesTrendWidget;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\Auth\Pages\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,6 +33,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->profile(EditProfile::class, isSimple: false)
+            ->multiFactorAuthentication([
+                AppAuthentication::make()->recoverable(),
+            ], isRequired: true)
             ->colors([
                 'primary' => Color::Amber,
             ])

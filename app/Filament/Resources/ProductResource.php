@@ -71,6 +71,8 @@ class ProductResource extends Resource
                             ->image()
                             ->disk('public')
                             ->directory('products')
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
                             ->previewable(true)
                             ->openable()
                             ->downloadable()

@@ -17,7 +17,7 @@ class BlockonomicsService
     /**
      * Generate a new Bitcoin payment address via Blockonomics.
      */
-    public function createAddress(): string
+    public function createAddress(?string $callbackUrl = null): string
     {
         $apiKey = $this->apiKey ?: config('services.blockonomics.api_key');
 
@@ -27,13 +27,19 @@ class BlockonomicsService
 
         try {
             // Primary mode follows Blockonomics examples for /api/new_address.
+            $formParams = [
+                'api_key' => $apiKey,
+            ];
+
+            if ($callbackUrl) {
+                $formParams['callback'] = $callbackUrl;
+            }
+
             $response = $this->client->post('https://www.blockonomics.co/api/new_address', [
                 'headers' => [
                     'Accept' => 'application/json',
                 ],
-                'form_params' => [
-                    'api_key' => $apiKey,
-                ],
+                'form_params' => $formParams,
                 'http_errors' => false,
                 'timeout' => 15,
             ]);
@@ -103,5 +109,42 @@ class BlockonomicsService
         $bitcoinUri = 'bitcoin:' . $address;
 
         return 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($bitcoinUri);
+    }
+
+    /**
+     * Convert a USD amount to BTC using Blockonomics price feed.
+     */
+    public function convertUsdToBtc(float $usdAmount): float
+    {
+        if ($usdAmount <= 0) {
+            throw new RuntimeException('USD amount must be greater than zero.');
+        }
+
+        try {
+            $response = $this->client->get('https://www.blockonomics.co/api/price?currency=USD', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+                'http_errors' => false,
+                'timeout' => 15,
+            ]);
+
+            $status = $response->getStatusCode();
+            $payload = json_decode((string) $response->getBody(), true);
+
+            if ($status < 200 || $status >= 300 || ! is_array($payload) || empty($payload['price'])) {
+                throw new RuntimeException($this->extractErrorMessage($status, $payload));
+            }
+
+            $usdPerBtc = (float) $payload['price'];
+
+            if ($usdPerBtc <= 0) {
+                throw new RuntimeException('Received invalid BTC price from Blockonomics.');
+            }
+
+            return round($usdAmount / $usdPerBtc, 8);
+        } catch (GuzzleException $exception) {
+            throw new RuntimeException('Unable to fetch BTC conversion rate: ' . $exception->getMessage(), previous: $exception);
+        }
     }
 }

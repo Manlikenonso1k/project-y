@@ -37,6 +37,8 @@ return [
 
     'blockonomics' => [
         'api_key' => env('BLOCKONOMICS_API_KEY'),
+        'callback_secret' => env('BLOCKONOMICS_CALLBACK_SECRET'),
+        'callback_ips' => env('BLOCKONOMICS_CALLBACK_IPS', ''),
     ],
 
 ];

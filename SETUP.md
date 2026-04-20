@@ -227,13 +227,118 @@ php artisan tinker
 
 ## 🚢 Ready to Deploy?
 
+## 🛡️ Production Dependencies (Ubuntu + Tor Hidden Service)
+
+Install system packages:
+
+```bash
+sudo apt update
+sudo apt install -y \
+  tor \
+  nginx \
+  mysql-server \
+  php8.3-fpm php8.3-cli php8.3-mysql php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip php8.3-bcmath php8.3-intl \
+  composer \
+  unzip git curl \
+  fail2ban ufw unattended-upgrades
+```
+
+Optional (if you expose clearnet HTTPS in addition to .onion):
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+```
+
+Install Laravel production dependencies:
+
+```bash
+cd /var/www/ecommerce-laravel
+composer install --no-dev --optimize-autoloader --classmap-authoritative
+php artisan migrate --force
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Required production environment variables:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://your-onion-address.onion
+SESSION_SECURE_COOKIE=true
+SESSION_HTTP_ONLY=true
+SESSION_SAME_SITE=strict
+BLOCKONOMICS_API_KEY=your_store_api_key
+BLOCKONOMICS_CALLBACK_SECRET=generate_a_long_random_secret
+BLOCKONOMICS_CALLBACK_IPS=
+```
+
+Minimum Tor hidden service mapping (/etc/tor/torrc):
+
+```conf
+HiddenServiceDir /var/lib/tor/ecommerce_service/
+HiddenServicePort 80 127.0.0.1:8080
+```
+
+Apply Tor config:
+
+```bash
+sudo chown -R debian-tor:debian-tor /var/lib/tor/ecommerce_service
+sudo chmod 700 /var/lib/tor/ecommerce_service
+sudo systemctl restart tor
+sudo cat /var/lib/tor/ecommerce_service/hostname
+```
+
+Nginx should listen only on localhost for onion-only hosting:
+
+```nginx
+server {
+    listen 127.0.0.1:8080;
+    server_name _;
+    root /var/www/ecommerce-laravel/public;
+    index index.php;
+
+    autoindex off;
+    location ~ /\.(?!well-known).* { deny all; }
+    location ~* /(\.env|vendor|storage) { deny all; }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+}
+```
+
+Enable Nginx site and restart:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Harden firewall for Tor-only deployment:
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow OpenSSH
+sudo ufw enable
+sudo ufw status
+```
+
 Before going live:
 
 1. Set `.env`:
    ```
    APP_DEBUG=false
    APP_ENV=production
-   APP_URL=https://your-domain.com
+   APP_URL=http://your-onion-address.onion
    ```
 
 2. Optimize:

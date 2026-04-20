@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Test User',
             'password' => bcrypt('password'),
+            'is_admin' => false,
         ]);
 
         User::updateOrCreate([
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Itachi',
             'password' => bcrypt('itachi'),
+            'is_admin' => true,
         ]);
 
         // Seed products
