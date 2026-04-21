@@ -26,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('production')) {
+        $host = strtolower((string) request()->getHost());
+        $isOnionRequest = $host !== '' && str_ends_with($host, '.onion');
+
+        if ($this->app->environment('production') && ! $isOnionRequest) {
             URL::forceScheme('https');
         }
 

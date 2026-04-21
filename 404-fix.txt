@@ -1,0 +1,15 @@
+"I am running a Laravel 11 application with Vite on a Tor (.onion) hidden service.
+
+Issues:
+
+CSS and Images are not loading (404 or blocked).
+
+Only the homepage works; all other routes (e.g., /login, /dashboard) return a 404.
+
+Requirements:
+
+Provide an Nginx server block configuration that correctly handles .onion hostnames and includes the try_files directive for Laravel routing.
+
+Show me how to modify AppServiceProvider.php to ensure the application does not force HTTPS when accessed via Tor.
+
+Explain how to configure vite.config.js so that npm run build generates relative paths or paths that match my .onion domain without using an external CDN."
