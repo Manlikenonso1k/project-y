@@ -20,6 +20,7 @@ class Product extends Model
         'is_featured',
         'is_active',
         'views_count',
+        'is_variable',
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Product extends Model
         'original_price' => 'decimal:2',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
+        'is_variable' => 'boolean',
         'views_count' => 'integer',
     ];
 
@@ -43,5 +45,10 @@ class Product extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 }

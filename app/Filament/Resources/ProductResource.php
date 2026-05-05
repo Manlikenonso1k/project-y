@@ -43,21 +43,67 @@ class ProductResource extends Resource
                     ->relationship('category', 'name')
                     ->required(),
                 
+                Section::make('Product Type')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_variable')
+                            ->label('Variable Product (Weight-based pricing)')
+                            ->default(false)
+                            ->reactive(),
+                    ]),
+                
                 Section::make('Pricing')
                     ->schema([
                         Forms\Components\TextInput::make('price')
                             ->numeric()
                             ->required()
                             ->step(0.01)
-                            ->prefix('$'),
+                            ->prefix('$')
+                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
                         
                         Forms\Components\TextInput::make('original_price')
                             ->numeric()
                             ->step(0.01)
                             ->nullable()
-                            ->prefix('$'),
+                            ->prefix('$')
+                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
                     ])
                     ->columns(2),
+                
+                Section::make('Weight-Based Variants')
+                    ->schema([
+                        Forms\Components\Repeater::make('variants')
+                            ->relationship('variants')
+                            ->schema([
+                                Forms\Components\TextInput::make('weight')
+                                    ->numeric()
+                                    ->required()
+                                    ->step(0.01)
+                                    ->label('Weight'),
+                                
+                                Forms\Components\Select::make('unit')
+                                    ->options([
+                                        'g' => 'Grams (g)',
+                                        'kg' => 'Kilograms (kg)',
+                                    ])
+                                    ->required(),
+                                
+                                Forms\Components\TextInput::make('price')
+                                    ->numeric()
+                                    ->required()
+                                    ->step(0.01)
+                                    ->prefix('$')
+                                    ->label('Price'),
+                                
+                                Forms\Components\TextInput::make('stock')
+                                    ->numeric()
+                                    ->required()
+                                    ->default(0)
+                                    ->label('Stock'),
+                            ])
+                            ->columns(4)
+                            ->collapsible()
+                            ->visible(fn (Forms\Get $get) => $get('is_variable')),
+                    ]),
                 
                 Section::make('Inventory & Media')
                     ->schema([
@@ -65,7 +111,8 @@ class ProductResource extends Resource
                             ->numeric()
                             ->required()
                             ->default(0)
-                            ->label('Stock Quantity'),
+                            ->label('Stock Quantity')
+                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
                         
                         Forms\Components\FileUpload::make('image')
                             ->image()
