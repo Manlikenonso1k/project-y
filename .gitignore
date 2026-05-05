@@ -43,3 +43,8 @@ Thumbs.db
 .env.*.local
 config/php.ini
 auth.json
+.env
+.env.local
+.env.*.local
+config/php.ini
+auth.json
