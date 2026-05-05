@@ -45,7 +45,7 @@
             </div>
             <div class="mb-4">
                 <h6 class="mb-2"><i class="fas fa-envelope me-2"></i> Email</h6>
-                <p><a href="mailto:info@electroshop.com" class="text-decoration-none">info@electroshop.com</a></p>
+                <p><a href="mailto:itachi45@proton.me" class="text-decoration-none">itachi45@proton.me</a></p>
             </div>
             <div class="mb-4">
                 <h6 class="mb-2"><i class="fas fa-clock me-2"></i> Business Hours</h6>

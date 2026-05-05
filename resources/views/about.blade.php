@@ -14,9 +14,9 @@
         </div>
         <div class="col-lg-6 d-flex align-items-center">
             <div>
-                <h2 class="mb-4">About Electro Shop</h2>
-                <p class="lead mb-4">We are your trusted online electronics retailer with over 10 years of experience in providing quality products and exceptional customer service.</p>
-                <p class="mb-4">Our mission is to make the latest technology accessible and affordable for everyone. We offer a wide range of electronics products including smartphones, laptops, accessories, and much more.</p>
+                <h2 class="mb-4">About Project X Shop</h2>
+                <p class="lead mb-4">We are your trusted onlineProject Xnics retailer with over 10 years of experience in providing quality products and exceptional customer service.</p>
+                <p class="mb-4">Our mission is to make the latest technology accessible and affordable for everyone. We offer a wide range ofProject Xnics products including smartphones, laptops, accessories, and much more.</p>
 
                 <h5 class="mb-3">Why Choose Us?</h5>
                 <ul class="list-unstyled">

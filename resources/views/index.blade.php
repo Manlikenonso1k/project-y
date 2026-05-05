@@ -13,7 +13,7 @@
             <a href="{{ route('bestseller') }}" class="btn btn-outline-light btn-lg">Best Sellers</a>
         </div>
         <div class="col-lg-6">
-            <img src="{{ asset('img/header-img.jpg') }}" class="img-fluid hero-image" alt="Electro Shop Hero">
+            <img src="{{ asset('img/header-img.jpg') }}" class="img-fluid hero-image" alt=" Project X Shop Hero">
         </div>
     </div>
 </div>

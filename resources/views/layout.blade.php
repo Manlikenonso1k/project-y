@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>@yield('title') - Electro Shop</title>
+    <title>@yield('title') - Project X Shop</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -68,7 +68,7 @@
     <div class="container-fluid py-3 px-5 nav-bar sticky-top">
         <div class="row gx-0 align-items-center">
             <div class="col-lg-2">
-                <h1 class="mb-0"><a href="{{ route('home') }}" class="text-primary"><i class="fas fa-bolt text-primary"></i> Electro</a></h1>
+                <h1 class="mb-0"><a href="{{ route('home') }}" class="text-primary"><i class="fas fa-bolt text-primary"></i> Project X</a></h1>
             </div>
             <div class="col-lg-8">
                 <form class="input-group" method="GET" action="{{ route('shop.index') }}">
@@ -160,7 +160,7 @@
     </div>
 
     <div class="bg-dark text-white text-center py-4 px-5">
-        <p class="m-0">&copy; 2026 Electro Shop. All Rights Reserved.</p>
+        <p class="m-0">&copy; 2026 Project X Shop. All Rights Reserved.</p>
     </div>
     <!-- Footer End -->
 
