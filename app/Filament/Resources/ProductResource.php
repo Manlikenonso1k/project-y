@@ -12,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -58,14 +59,14 @@ class ProductResource extends Resource
                             ->required()
                             ->step(0.01)
                             ->prefix('$')
-                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
+                            ->visible(fn (Get $get) => !$get('is_variable')),
                         
                         Forms\Components\TextInput::make('original_price')
                             ->numeric()
                             ->step(0.01)
                             ->nullable()
                             ->prefix('$')
-                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
+                            ->visible(fn (Get $get) => !$get('is_variable')),
                     ])
                     ->columns(2),
                 
@@ -102,7 +103,7 @@ class ProductResource extends Resource
                             ])
                             ->columns(4)
                             ->collapsible()
-                            ->visible(fn (Forms\Get $get) => $get('is_variable')),
+                            ->visible(fn (Get $get) => $get('is_variable')),
                     ]),
                 
                 Section::make('Inventory & Media')
@@ -112,7 +113,7 @@ class ProductResource extends Resource
                             ->required()
                             ->default(0)
                             ->label('Stock Quantity')
-                            ->visible(fn (Forms\Get $get) => !$get('is_variable')),
+                            ->visible(fn (Get $get) => !$get('is_variable')),
                         
                         Forms\Components\FileUpload::make('image')
                             ->image()
