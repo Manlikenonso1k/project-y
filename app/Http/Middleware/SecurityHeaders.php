@@ -20,15 +20,14 @@ class SecurityHeaders
         $response->headers->set('Content-Security-Policy', implode('; ', [
             "default-src 'self'",
             "base-uri 'self'",
-            "form-action 'self'",
+            "form-action 'self' http:",
             "frame-ancestors 'self'",
-            "img-src 'self' data: https:",
+            "img-src 'self' data: https: http:",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.blockonomics.co",
             "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net",
-            "connect-src 'self' https:",
+            "connect-src 'self' https: http:",
             "object-src 'none'",
-            "upgrade-insecure-requests",
         ]));
 
         if ($request->isSecure() && app()->environment('production')) {
