@@ -9,6 +9,22 @@
 @endsection
 
 @section('content')
+@php
+    $initialPrice = $product->is_variable && $product->variants->count() > 0
+        ? $product->variants->first()->price
+        : $product->price;
+    $initialOriginalPrice = $product->original_price;
+    $initialStock = $product->is_variable && $product->variants->count() > 0
+        ? $product->variants->first()->stock
+        : $product->quantity;
+    $initialDiscount = $initialOriginalPrice && $initialOriginalPrice > $initialPrice
+        ? $initialOriginalPrice - $initialPrice
+        : null;
+    $initialDiscountPercent = $initialOriginalPrice && $initialOriginalPrice > $initialPrice && $initialOriginalPrice > 0
+        ? round((($initialOriginalPrice - $initialPrice) / $initialOriginalPrice) * 100)
+        : null;
+@endphp
+
 <div class="container-fluid py-5 px-5">
     <div class="row">
         <!-- Product Image -->
@@ -24,12 +40,22 @@
         <div class="col-lg-7">
             <h1 class="mb-3">{{ $product->name }}</h1>
 
-            <div class="d-flex align-items-center gap-3 mb-4">
-                <span class="h3 text-primary mb-0">${{ number_format($product->price, 2) }}</span>
-                @if($product->original_price)
-                    <span class="h5 text-decoration-line-through text-muted mb-0">${{ number_format($product->original_price, 2) }}</span>
-                @endif
-                <span class="badge bg-info">{{ $product->quantity }} in stock</span>
+            <div class="d-flex align-items-center gap-3 mb-4 flex-wrap" id="product-pricing-block"
+                 data-price="{{ $initialPrice }}"
+                 data-original-price="{{ $initialOriginalPrice ?? '' }}"
+                 data-stock="{{ $initialStock }}">
+                <span class="h3 text-primary mb-0" id="product-price">${{ number_format($initialPrice, 2) }}</span>
+                <span class="h5 text-decoration-line-through text-muted mb-0 {{ $initialOriginalPrice && $initialOriginalPrice > $initialPrice ? '' : 'd-none' }}" id="product-original-price">
+                    @if($initialOriginalPrice && $initialOriginalPrice > $initialPrice)
+                        ${{ number_format($initialOriginalPrice, 2) }}
+                    @endif
+                </span>
+                <span class="badge bg-success {{ $initialDiscount ? '' : 'd-none' }}" id="product-discount-badge">
+                    @if($initialDiscountPercent)
+                        Save {{ $initialDiscountPercent }}% (${{ number_format($initialDiscount, 2) }})
+                    @endif
+                </span>
+                <span class="badge bg-info" id="product-stock">{{ $initialStock }} in stock</span>
             </div>
 
             <p class="mb-4">{{ $product->description }}</p>
@@ -142,6 +168,61 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const weightSelect = document.getElementById('weight-select');
                 const variantIdInput = document.getElementById('variant_id');
+                const priceEl = document.getElementById('product-price');
+                const originalPriceEl = document.getElementById('product-original-price');
+                const discountBadgeEl = document.getElementById('product-discount-badge');
+                const stockEl = document.getElementById('product-stock');
+                const pricingBlock = document.getElementById('product-pricing-block');
+
+                function updatePricingDisplay(detail) {
+                    if (!detail) {
+                        return;
+                    }
+
+                    const price = Number(detail.price ?? 0);
+                    const originalPrice = detail.originalPrice !== null && detail.originalPrice !== undefined && detail.originalPrice !== ''
+                        ? Number(detail.originalPrice)
+                        : null;
+                    const stock = detail.stock ?? 0;
+
+                    if (priceEl) {
+                        priceEl.textContent = `$${price.toFixed(2)}`;
+                    }
+
+                    if (stockEl) {
+                        stockEl.textContent = `${stock} in stock`;
+                    }
+
+                    if (pricingBlock) {
+                        pricingBlock.dataset.price = price;
+                        pricingBlock.dataset.stock = stock;
+                    }
+
+                    if (originalPriceEl && originalPrice !== null && originalPrice > price) {
+                        originalPriceEl.textContent = `$${originalPrice.toFixed(2)}`;
+                        originalPriceEl.classList.remove('d-none');
+                    } else if (originalPriceEl) {
+                        originalPriceEl.classList.add('d-none');
+                        originalPriceEl.textContent = '';
+                    }
+
+                    if (discountBadgeEl && originalPrice !== null && originalPrice > price) {
+                        const discount = originalPrice - price;
+                        const percent = originalPrice > 0 ? Math.round((discount / originalPrice) * 100) : 0;
+                        discountBadgeEl.textContent = `Save ${percent}% ($${discount.toFixed(2)})`;
+                        discountBadgeEl.classList.remove('d-none');
+                    } else if (discountBadgeEl) {
+                        discountBadgeEl.classList.add('d-none');
+                        discountBadgeEl.textContent = '';
+                    }
+                }
+
+                window.addEventListener('product-pricing-updated', function(event) {
+                    updatePricingDisplay(event.detail);
+                    if (variantIdInput && event.detail && event.detail.variantId) {
+                        variantIdInput.value = event.detail.variantId;
+                    }
+                });
                 
                 // Listen for Livewire component updates
                 window.addEventListener('livewire:update', function(event) {
@@ -155,10 +236,9 @@
                     weightSelect.addEventListener('change', function() {
                         variantIdInput.value = this.value;
                     });
-                    
-                    // Set initial value
-                    if (this.value) {
-                        variantIdInput.value = this.value;
+
+                    if (variantIdInput && weightSelect.value) {
+                        variantIdInput.value = weightSelect.value;
                     }
                 }
                 

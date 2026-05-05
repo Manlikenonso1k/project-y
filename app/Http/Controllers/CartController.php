@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class CartController extends Controller
@@ -41,32 +42,48 @@ class CartController extends Controller
         $price = $product->price;
         $variantId = null;
 
-        // If variant_id is provided, use the variant price
-        if ($request->filled('variant_id') && $product->is_variable) {
-            $variant = $product->variants()->find($request->variant_id);
+        if ($product->is_variable) {
+            $variant = null;
+
+            if ($request->filled('variant_id')) {
+                $variant = $product->variants()->find($request->variant_id);
+            }
+
+            if (! $variant) {
+                $variant = $product->variants()->orderBy('id')->first();
+            }
+
             if ($variant) {
                 $price = $variant->price;
                 $variantId = $variant->id;
             }
         }
 
-        $existingItem = $cart->items()
-            ->where('product_id', $product->id)
-            ->where('variant_id', $variantId)
-            ->first();
+        $existingItemQuery = $cart->items()->where('product_id', $product->id);
+
+        if ($variantId !== null && Schema::hasColumn('cart_items', 'variant_id')) {
+            $existingItemQuery->where('variant_id', $variantId);
+        }
+
+        $existingItem = $existingItemQuery->first();
 
         if ($existingItem instanceof CartItem) {
             $existingItem->update([
                 'quantity' => $existingItem->quantity + $request->quantity
             ]);
         } else {
-            CartItem::create([
+            $cartItemData = [
                 'cart_id' => $cart->id,
                 'product_id' => $product->id,
-                'variant_id' => $variantId,
                 'quantity' => $request->quantity,
                 'price' => $price,
-            ]);
+            ];
+
+            if ($variantId !== null && Schema::hasColumn('cart_items', 'variant_id')) {
+                $cartItemData['variant_id'] = $variantId;
+            }
+
+            CartItem::create($cartItemData);
         }
 
         return redirect()->back()->with('success', 'Product added to cart!');
