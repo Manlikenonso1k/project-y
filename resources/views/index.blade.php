@@ -7,7 +7,7 @@
 <div class="container-fluid py-5 bg-light">
     <div class="row align-items-center g-4 hero-panel">
         <div class="col-lg-6">
-            <h1 class="display-5 mb-4">Welcome to Electro Shop</h1>
+            <h1 class="display-5 mb-4">Welcome to Project x Shop</h1>
             <p class="lead mb-4">Discover amazing electronics at unbeatable prices. From smartphones to laptops, find everything you need.</p>
             <a href="{{ route('shop.index') }}" class="btn btn-light btn-lg me-2">Shop Now</a>
             <a href="{{ route('bestseller') }}" class="btn btn-outline-light btn-lg">Best Sellers</a>
