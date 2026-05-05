@@ -38,9 +38,21 @@ class CartController extends Controller
     {
         $cart = $this->getCart();
         $product = Product::findOrFail($request->product_id);
+        $price = $product->price;
+        $variantId = null;
+
+        // If variant_id is provided, use the variant price
+        if ($request->filled('variant_id') && $product->is_variable) {
+            $variant = $product->variants()->find($request->variant_id);
+            if ($variant) {
+                $price = $variant->price;
+                $variantId = $variant->id;
+            }
+        }
 
         $existingItem = $cart->items()
             ->where('product_id', $product->id)
+            ->where('variant_id', $variantId)
             ->first();
 
         if ($existingItem instanceof CartItem) {
@@ -51,8 +63,9 @@ class CartController extends Controller
             CartItem::create([
                 'cart_id' => $cart->id,
                 'product_id' => $product->id,
+                'variant_id' => $variantId,
                 'quantity' => $request->quantity,
-                'price' => $product->price,
+                'price' => $price,
             ]);
         }
 

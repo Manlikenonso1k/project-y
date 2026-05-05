@@ -34,10 +34,18 @@
 
             <p class="mb-4">{{ $product->description }}</p>
 
+            <!-- Product Variant Selector (if product has variants) -->
+            @if($product->is_variable && $product->variants->count() > 0)
+                <livewire:product-variant-selector :product="$product" />
+            @endif
+
             <!-- Add to Cart Form -->
-            <form method="POST" action="{{ route('cart.add') }}" class="mb-4">
+            <form method="POST" action="{{ route('cart.add') }}" class="mb-4" id="add-to-cart-form">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
+                @if($product->is_variable && $product->variants->count() > 0)
+                    <input type="hidden" name="variant_id" id="variant_id" value="">
+                @endif
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4">
                         <label for="quantity" class="form-label">Quantity:</label>
@@ -127,5 +135,47 @@
 @push('scripts')
     @if($product->name === 'Wireless Headphones Pro')
         <script src="https://www.blockonomics.co/js/pay_button.js"></script>
+    @endif
+    
+    @if($product->is_variable && $product->variants->count() > 0)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const weightSelect = document.getElementById('weight-select');
+                const variantIdInput = document.getElementById('variant_id');
+                
+                // Listen for Livewire component updates
+                window.addEventListener('livewire:update', function(event) {
+                    if (weightSelect && weightSelect.value) {
+                        variantIdInput.value = weightSelect.value;
+                    }
+                });
+                
+                // Also listen for direct select changes
+                if (weightSelect) {
+                    weightSelect.addEventListener('change', function() {
+                        variantIdInput.value = this.value;
+                    });
+                    
+                    // Set initial value
+                    if (this.value) {
+                        variantIdInput.value = this.value;
+                    }
+                }
+                
+                // Validate variant selection before form submit
+                const form = document.getElementById('add-to-cart-form');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        @if($product->is_variable)
+                            if (!variantIdInput.value) {
+                                e.preventDefault();
+                                alert('Please select a weight/variant before adding to cart');
+                                return false;
+                            }
+                        @endif
+                    });
+                }
+            });
+        </script>
     @endif
 @endpush
