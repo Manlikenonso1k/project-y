@@ -1,23 +1,12 @@
-FROM php:8.4-fpm
+FROM php:8.4-fpm-alpine
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     curl \
     git \
     unzip \
-    libpq-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    bcmath \
-    ctype \
-    json \
-    fileinfo
+    libpq \
+    mysql-client
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
