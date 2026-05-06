@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcessCheckoutRequest;
+use App\Mail\OrderConfirmation;
+use App\Mail\OrderNotification;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\TelegramNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -79,6 +83,18 @@ class CheckoutController extends Controller
 
         $cart->items()->delete();
         session()->put('last_order_id', $order->id);
+
+        try {
+            Mail::to($order->email)->send(new OrderConfirmation($order));
+            
+            $adminEmail = config('mail.from.address');
+            Mail::to($adminEmail)->send(new OrderNotification($order));
+            
+            $telegramService = new TelegramNotificationService();
+            $telegramService->sendOrderNotification($order);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send order notifications: ' . $e->getMessage());
+        }
 
         return redirect()->route('order.success', $order)->with('success', 'Order placed successfully!');
     }
