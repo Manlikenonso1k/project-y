@@ -7,8 +7,14 @@ use Illuminate\Support\Facades\Http;
 
 class TelegramNotificationService
 {
-    private $botToken = '8553841666:AAFvLOLdcV4JvQAwUPKAyAFB2_fr0TBOB9U';
-    private $chatId = '1963161428';
+    private $botToken;
+    private $chatId;
+
+    public function __construct()
+    {
+        $this->botToken = config('services.telegram.bot_token') ?? env('BOT_TOKEN') ?? env('TELEGRAM_BOT_TOKEN') ?? '';
+        $this->chatId = config('services.telegram.chat_id') ?? env('CHAT_ID') ?? env('TELEGRAM_CHAT_ID') ?? '';
+    }
 
     public function sendOrderNotification(Order $order)
     {
@@ -37,6 +43,11 @@ class TelegramNotificationService
 
     private function sendMessage($text)
     {
+        if (empty($this->botToken) || empty($this->chatId)) {
+            \Log::info('Telegram credentials not configured; skipping notification.');
+            return false;
+        }
+
         try {
             $response = Http::post("https://api.telegram.org/bot{$this->botToken}/sendMessage", [
                 'chat_id' => $this->chatId,
