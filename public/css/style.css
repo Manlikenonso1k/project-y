@@ -75,6 +75,15 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.01em;
 }
 
+.btn-square {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .btn-primary {
     border-color: transparent;
     background: linear-gradient(120deg, var(--brand), var(--brand-2));

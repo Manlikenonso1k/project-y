@@ -77,8 +77,12 @@
                 </form>
             </div>
             <div class="col-lg-2 text-end">
-                <a href="{{ route('cart.index') }}" class="btn btn-primary btn-square"><i class="bi bi-bag-check"></i></a>
-                <span class="badge bg-danger position-absolute" style="top: 5px; right: 10px;">{{ $cartCount ?? 0 }}</span>
+                <a href="{{ route('cart.index') }}" class="btn btn-primary btn-square position-relative" aria-label="View cart">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                        {{ $cartCount ?? 0 }}
+                    </span>
+                </a>
             </div>
         </div>
     </div>

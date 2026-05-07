@@ -33,8 +33,8 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            @if($item->product->image)
-                                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            @if($item->product->primary_image_url)
+                                                <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" style="width: 50px; height: 50px; object-fit: cover;">
                                             @else
                                                 <img src="{{ asset('img/product-' . (($loop->iteration % 18) + 1) . '.png') }}" alt="{{ $item->product->name }}" style="width: 50px; height: 50px; object-fit: cover;">
                                             @endif

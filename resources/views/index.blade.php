@@ -25,8 +25,8 @@
         @forelse($products ?? [] as $product)
             <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card h-100">
-                    @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}">
+                    @if($product->primary_image_url)
+                        <img src="{{ $product->primary_image_url }}" class="card-img-top" alt="{{ $product->name }}">
                     @else
                         <img src="{{ asset('img/product-' . (($loop->iteration % 18) + 1) . '.png') }}" class="card-img-top" alt="{{ $product->name }}">
                     @endif

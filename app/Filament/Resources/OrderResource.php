@@ -77,7 +77,7 @@ class OrderResource extends Resource
                     ->label('Customer'),
                 
                 Tables\Columns\TextColumn::make('total')
-                    ->money('USD')
+                    ->formatStateUsing(fn ($state): string => '$' . number_format((float) $state, 2))
                     ->sortable(),
                 
                 Tables\Columns\BadgeColumn::make('status')

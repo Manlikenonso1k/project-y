@@ -115,17 +115,23 @@ class ProductResource extends Resource
                             ->label('Stock Quantity')
                             ->visible(fn (Get $get) => !$get('is_variable')),
                         
-                        Forms\Components\FileUpload::make('image')
+                        Forms\Components\FileUpload::make('images')
                             ->image()
+                            ->multiple()
+                            ->appendFiles()
+                            ->reorderable()
+                            ->panelLayout('grid')
                             ->disk('public')
                             ->directory('products')
+                            ->visibility('public')
+                            ->maxFiles(8)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(5120)
                             ->previewable(true)
                             ->openable()
                             ->downloadable()
-                            ->label('Product Image')
-                            ->helperText('Upload a product image (PNG, JPG, JPEG, GIF - Max 5MB)'),
+                            ->label('Product Images')
+                            ->helperText('Upload one or more product images (PNG, JPG, JPEG, WEBP - Max 5MB each)'),
                     ])
                     ->columns(2),
                 
@@ -147,8 +153,9 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
+                Tables\Columns\ImageColumn::make('primary_image_url')
                     ->label('Image')
+                    ->getStateUsing(fn (Product $record): ?string => $record->primary_image_url)
                     ->square()
                     ->size(50),
                 
@@ -160,7 +167,7 @@ class ProductResource extends Resource
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('price')
-                    ->money('USD')
+                    ->formatStateUsing(fn ($state): string => '$' . number_format((float) $state, 2))
                     ->sortable(),
                 
                 Tables\Columns\TextColumn::make('quantity')

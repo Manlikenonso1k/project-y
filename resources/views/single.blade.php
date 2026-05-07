@@ -10,6 +10,7 @@
 
 @section('content')
 @php
+    $galleryImages = $product->gallery_image_urls;
     $initialPrice = $product->is_variable && $product->variants->count() > 0
         ? $product->variants->first()->price
         : $product->price;
@@ -29,8 +30,36 @@
     <div class="row">
         <!-- Product Image -->
         <div class="col-lg-5 mb-4">
-            @if($product->image)
-                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
+            @if(count($galleryImages) > 1)
+                <div id="productGallery" class="carousel slide">
+                    <div class="carousel-indicators">
+                        @foreach($galleryImages as $index => $imageUrl)
+                            <button type="button" data-bs-target="#productGallery" data-bs-slide-to="{{ $index }}" class="{{ $loop->first ? 'active' : '' }}" @if($loop->first) aria-current="true" @endif aria-label="Slide {{ $index + 1 }}"></button>
+                        @endforeach
+                    </div>
+                    <div class="carousel-inner rounded-4 overflow-hidden bg-white shadow-sm">
+                        @foreach($galleryImages as $imageUrl)
+                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
+                                <img src="{{ $imageUrl }}" class="d-block w-100" alt="{{ $product->name }}" style="max-height: 520px; object-fit: contain; background: #fff;">
+                            </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productGallery" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productGallery" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    @foreach($galleryImages as $imageUrl)
+                        <img src="{{ $imageUrl }}" class="rounded border" alt="{{ $product->name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                    @endforeach
+                </div>
+            @elseif($product->primary_image_url)
+                <img src="{{ $product->primary_image_url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ $product->name }}">
             @else
                 <img src="{{ asset('img/product-' . (($product->id % 18) + 1) . '.png') }}" class="img-fluid" alt="{{ $product->name }}">
             @endif
@@ -135,8 +164,8 @@
             @foreach($relatedProducts as $related)
                 <div class="col-md-6 col-lg-3 mb-4">
                     <div class="card h-100">
-                        @if($related->image)
-                            <img src="{{ asset('storage/' . $related->image) }}" class="card-img-top" alt="{{ $related->name }}" style="height: 200px; object-fit: cover;">
+                        @if($related->primary_image_url)
+                            <img src="{{ $related->primary_image_url }}" class="card-img-top" alt="{{ $related->name }}" style="height: 200px; object-fit: cover;">
                         @else
                             <img src="{{ asset('img/product-' . (($loop->iteration % 18) + 1) . '.png') }}" class="card-img-top" alt="{{ $related->name }}" style="height: 200px; object-fit: cover;">
                         @endif
