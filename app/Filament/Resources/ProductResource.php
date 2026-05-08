@@ -149,29 +149,19 @@ class ProductResource extends Resource
                                 $set('primary_image', $paths[0] ?? null);
                             }),
 
-                        Forms\Components\Select::make('primary_image')
+                        Forms\Components\FileUpload::make('primary_image')
+                            ->image()
                             ->label('Primary Image')
-                            ->live()
-                            ->options(function (Get $get): array {
-                                $paths = collect($get('images') ?? [])
-                                    ->map(fn ($path): ?string => is_string($path) ? Product::normalizeImagePath($path) : (is_array($path) ? Product::normalizeImagePath($path['path'] ?? $path['file'] ?? $path['url'] ?? null) : null))
-                                    ->filter()
-                                    ->values()
-                                    ->all();
-
-                                $currentPrimaryImage = Product::normalizeImagePath($get('primary_image'));
-
-                                if (filled($currentPrimaryImage) && ! in_array($currentPrimaryImage, $paths, true)) {
-                                    array_unshift($paths, $currentPrimaryImage);
-                                }
-
-                                return collect($paths)
-                                    ->mapWithKeys(fn (string $path): array => [$path => basename($path)])
-                                    ->all();
-                            })
-                            ->searchable()
-                            ->dehydrateStateUsing(fn ($state): ?string => is_string($state) ? Product::normalizeImagePath($state) : (is_array($state) ? Product::normalizeImagePath($state['path'] ?? $state['file'] ?? $state['url'] ?? $state['name'] ?? null) : null))
-                            ->helperText('Choose which uploaded image appears first on the storefront and in admin lists.'),
+                            ->disk('public')
+                            ->directory('products')
+                            ->visibility('public')
+                            ->maxSize(5120)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->previewable(true)
+                            ->openable()
+                            ->downloadable()
+                            ->helperText('Upload a single primary image. This image is shown first on the storefront and in admin lists.')
+                            ->dehydrateStateUsing(fn ($state): ?string => is_string($state) ? Product::normalizeImagePath($state) : (is_array($state) ? Product::normalizeImagePath($state['path'] ?? $state['file'] ?? $state['url'] ?? $state['name'] ?? null) : null)),
                     ])
                     ->columns(2),
                 
