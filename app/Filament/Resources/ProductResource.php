@@ -170,7 +170,7 @@ class ProductResource extends Resource
                                     ->all();
                             })
                             ->searchable()
-                            ->dehydrateStateUsing(fn ($state): ?string => Product::normalizeImagePath($state))
+                            ->dehydrateStateUsing(fn ($state): ?string => is_string($state) ? Product::normalizeImagePath($state) : (is_array($state) ? Product::normalizeImagePath($state['path'] ?? $state['file'] ?? $state['url'] ?? $state['name'] ?? null) : null))
                             ->helperText('Choose which uploaded image appears first on the storefront and in admin lists.'),
                     ])
                     ->columns(2),
