@@ -13,24 +13,60 @@
         <div class="col-lg-3 mb-4">
             <h5 class="mb-4">Filter Products</h5>
 
-            <!-- Category Filter -->
-            <div class="mb-4">
-                <h6>Categories</h6>
-                @forelse($categories ?? [] as $cat)
-                    <a href="{{ route('category.show', $cat->slug) }}" class="d-flex justify-content-between text-decoration-none mb-2">
-                        <span>{{ $cat->name }}</span>
-                        <span class="text-muted">{{ $cat->products->count() }}</span>
-                    </a>
-                @empty
-                    <p class="text-muted">No categories</p>
-                @endforelse
-            </div>
+            <form method="GET" action="{{ isset($category) ? route('category.show', $category->slug) : route('shop.index') }}" class="mb-4">
+                <div class="mb-4">
+                    <h6>Categories</h6>
+                    @forelse($categories ?? [] as $cat)
+                        <a href="{{ route('category.show', $cat->slug) }}" class="d-flex justify-content-between text-decoration-none mb-2">
+                            <span>{{ $cat->name }}</span>
+                            <span class="text-muted">{{ $cat->products->count() }}</span>
+                        </a>
+                    @empty
+                        <p class="text-muted">No categories</p>
+                    @endforelse
+                </div>
 
-            <!-- Price Filter -->
-            <div class="mb-4">
-                <h6>Price Range</h6>
-                <p class="text-muted small mb-0">Use sorting and categories to browse quickly.</p>
-            </div>
+                <div class="mb-4">
+                    <h6 class="mb-3">Price Range</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label for="price-min" class="form-label small mb-1">Min</label>
+                            <input
+                                id="price-min"
+                                type="number"
+                                name="price_min"
+                                class="form-control form-control-sm"
+                                placeholder="0"
+                                min="0"
+                                step="0.01"
+                                value="{{ request('price_min') }}"
+                            >
+                        </div>
+                        <div class="col-6">
+                            <label for="price-max" class="form-label small mb-1">Max</label>
+                            <input
+                                id="price-max"
+                                type="number"
+                                name="price_max"
+                                class="form-control form-control-sm"
+                                placeholder="999"
+                                min="0"
+                                step="0.01"
+                                value="{{ request('price_max') }}"
+                            >
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1">Apply</button>
+                        <a href="{{ isset($category) ? route('category.show', $category->slug) : route('shop.index') }}" class="btn btn-outline-primary btn-sm">Reset</a>
+                    </div>
+                </div>
+
+                @if(request()->filled('search') || request()->filled('sort'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                @endif
+            </form>
         </div>
 
         <!-- Products Grid -->
@@ -40,13 +76,22 @@
                     <h4>{{ $category->name ?? 'All Products' }}</h4>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <form method="GET" action="{{ route('shop.index') }}" class="d-flex gap-2">
+                    <form method="GET" action="{{ isset($category) ? route('category.show', $category->slug) : route('shop.index') }}" class="d-flex gap-2 justify-content-md-end">
+                        @if(request()->filled('price_min'))
+                            <input type="hidden" name="price_min" value="{{ request('price_min') }}">
+                        @endif
+                        @if(request()->filled('price_max'))
+                            <input type="hidden" name="price_max" value="{{ request('price_max') }}">
+                        @endif
                         <select name="sort" class="form-select form-select-sm">
                             <option value="">Sort By</option>
                             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
                             <option value="price-asc" {{ request('sort') == 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
                             <option value="price-desc" {{ request('sort') == 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
                         </select>
+                        @if(request()->filled('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
                         <button type="submit" class="btn btn-primary btn-sm">Apply</button>
                     </form>
                 </div>

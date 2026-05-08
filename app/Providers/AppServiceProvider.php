@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Cart;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $host = strtolower((string) request()->getHost());
         $isOnionRequest = $host !== '' && str_ends_with($host, '.onion');
+
+        Paginator::useBootstrapFive();
 
         if ($this->app->environment('production') && ! $isOnionRequest) {
             URL::forceScheme('https');

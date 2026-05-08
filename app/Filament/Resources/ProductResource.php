@@ -13,6 +13,7 @@ use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -131,7 +132,44 @@ class ProductResource extends Resource
                             ->openable()
                             ->downloadable()
                             ->label('Product Images')
-                            ->helperText('Upload one or more product images (PNG, JPG, JPEG, WEBP - Max 5MB each)'),
+                            ->helperText('Upload one or more product images (PNG, JPG, JPEG, WEBP - Max 5MB each)')
+                            ->afterStateUpdated(function (Get $get, Set $set, ?array $state): void {
+                                $paths = array_values(array_filter(array_map(
+                                    fn ($value): ?string => Product::normalizeImagePath($value),
+                                    $state ?? [],
+                                )));
+                                $primaryImage = $get('primary_image');
+
+                                if (filled($primaryImage) && in_array($primaryImage, $paths, true)) {
+                                    return;
+                                }
+
+                                $set('primary_image', $paths[0] ?? null);
+                            }),
+
+                        Forms\Components\Select::make('primary_image')
+                            ->label('Primary Image')
+                            ->live()
+                            ->options(function (Get $get): array {
+                                $paths = collect($get('images') ?? [])
+                                    ->map(fn ($path): ?string => Product::normalizeImagePath($path))
+                                    ->filter()
+                                    ->values()
+                                    ->all();
+
+                                $currentPrimaryImage = Product::normalizeImagePath($get('primary_image'));
+
+                                if (filled($currentPrimaryImage) && ! in_array($currentPrimaryImage, $paths, true)) {
+                                    array_unshift($paths, $currentPrimaryImage);
+                                }
+
+                                return collect($paths)
+                                    ->mapWithKeys(fn (string $path): array => [$path => basename($path)])
+                                    ->all();
+                            })
+                            ->searchable()
+                            ->dehydrateStateUsing(fn ($state): ?string => Product::normalizeImagePath($state))
+                            ->helperText('Choose which uploaded image appears first on the storefront and in admin lists.'),
                     ])
                     ->columns(2),
                 

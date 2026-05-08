@@ -77,8 +77,9 @@
                 </form>
             </div>
             <div class="col-lg-2 text-end">
-                <a href="{{ route('cart.index') }}" class="btn btn-primary btn-square position-relative" aria-label="View cart">
-                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                <a href="{{ route('cart.index') }}" class="btn btn-primary position-relative d-inline-flex align-items-center gap-2 px-3" aria-label="View cart">
+                    <i class="bi bi-cart3" aria-hidden="true"></i>
+                    <span class="d-none d-md-inline">Cart</span>
                     <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
                         {{ $cartCount ?? 0 }}
                     </span>
