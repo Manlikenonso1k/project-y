@@ -135,7 +135,9 @@ class ProductResource extends Resource
                             ->helperText('Upload one or more product images (PNG, JPG, JPEG, WEBP - Max 5MB each)')
                             ->afterStateUpdated(function (Get $get, Set $set, ?array $state): void {
                                 $paths = array_values(array_filter(array_map(
-                                    fn ($value): ?string => Product::normalizeImagePath($value),
+                                    fn ($value): ?string => is_string($value)
+                                        ? Product::normalizeImagePath($value)
+                                        : (is_array($value) ? Product::normalizeImagePath($value['path'] ?? $value['file'] ?? $value['url'] ?? null) : null),
                                     $state ?? [],
                                 )));
                                 $primaryImage = $get('primary_image');
@@ -152,7 +154,7 @@ class ProductResource extends Resource
                             ->live()
                             ->options(function (Get $get): array {
                                 $paths = collect($get('images') ?? [])
-                                    ->map(fn ($path): ?string => Product::normalizeImagePath($path))
+                                    ->map(fn ($path): ?string => is_string($path) ? Product::normalizeImagePath($path) : (is_array($path) ? Product::normalizeImagePath($path['path'] ?? $path['file'] ?? $path['url'] ?? null) : null))
                                     ->filter()
                                     ->values()
                                     ->all();
