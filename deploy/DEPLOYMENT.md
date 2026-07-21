@@ -119,6 +119,61 @@ sudo tail -f /var/log/nginx/project-x.access.log
 | Routes return 404 | Verify Nginx `try_files $uri $uri/ /index.php?$query_string;` is in the config. Check that `.onion` is in `server_name`. |
 | HTTPS redirect | Confirm `AppServiceProvider.php` skips `URL::forceScheme()` for `.onion` hosts (already patched). |
 | PHP-FPM socket not found | Check `sudo ls /run/php/` and update `fastcgi_pass` path in Nginx config if needed. |
+| `.onion` times out but `tor.service` is active | Confirm the app process behind Tor is running on the same port from `HiddenServicePort` (default: `127.0.0.1:8001`). If no listener exists, recreate and enable `projectx.service` using the recovery steps below. |
+
+### Recovery: `.onion` down because app service is missing
+
+If Tor is active but the hidden service is unreachable, and `/etc/tor/torrc` contains:
+
+```text
+HiddenServicePort 80 127.0.0.1:8001
+```
+
+then restore the Laravel backend service with:
+
+```bash
+# 1) Create launcher script
+cat > /home/ubuntu/start_projectx.sh <<'EOF'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+cd /home/ubuntu/project-x
+exec php artisan serve --host=127.0.0.1 --port=8001
+EOF
+chmod +x /home/ubuntu/start_projectx.sh
+
+# 2) Create systemd unit
+sudo tee /etc/systemd/system/projectx.service >/dev/null <<'EOF'
+[Unit]
+Description=projectx Laravel + Tor
+After=network-online.target tor.service
+Wants=network-online.target
+Requires=tor.service
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/project-x
+ExecStart=/bin/bash /home/ubuntu/start_projectx.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 3) Start and persist service
+sudo systemctl daemon-reload
+sudo systemctl enable --now projectx.service
+sudo systemctl restart projectx.service
+```
+
+Validate:
+
+```bash
+systemctl is-active projectx.service
+ss -ltnp | grep ':8001\b'
+curl -x socks5h://127.0.0.1:9050 http://yourhiddenserviceaddress.onion/
+```
 
 ## Rollback (if needed)
 
