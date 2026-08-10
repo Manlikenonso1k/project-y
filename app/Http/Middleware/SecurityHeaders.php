@@ -26,10 +26,10 @@ class SecurityHeaders
             "frame-ancestors 'self'",
             $isSecureProductionRequest ? "img-src 'self' data: https:" : "img-src 'self' data: https: http:",
             $isSecureProductionRequest ? "media-src 'self' data: blob: https:" : "media-src 'self' data: blob: https: http:",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.blockonomics.co",
-            "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net",
-            $isSecureProductionRequest ? "connect-src 'self' https:" : "connect-src 'self' https: http:",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.blockonomics.co http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173",
+            "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+            $isSecureProductionRequest ? "connect-src 'self' https:" : "connect-src 'self' https: http: ws://localhost:5173 ws://127.0.0.1:5173 ws://[::1]:5173 wss://localhost:5173 wss://127.0.0.1:5173 wss://[::1]:5173",
             "object-src 'none'",
         ];
 
@@ -41,7 +41,9 @@ class SecurityHeaders
             $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         }
 
-        $response->headers->set('Content-Security-Policy', implode('; ', $contentSecurityPolicy));
+        if (! app()->environment('local')) {
+            $response->headers->set('Content-Security-Policy', implode('; ', $contentSecurityPolicy));
+        }
 
         return $response;
     }
