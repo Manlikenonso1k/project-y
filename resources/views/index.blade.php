@@ -1,10 +1,4 @@
-﻿@extends('layout')
-
-@section('title', 'Home')
-
-@push('styles')
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
+﻿<!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>Vander Haag's - Your Trucks &amp; Parts Headquarters</title>
@@ -73,12 +67,8 @@
       }
     }
   </script>
-<link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Condensed:wght@400;700&amp;display=swap" data-snapdom="injected-import">
-@endpush
-
-
-@section('full_page')
-
+<link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Condensed:wght@400;700&amp;display=swap" data-snapdom="injected-import"></head>
+<body class="bg-white text-vander-text overflow-y-auto" style="height: auto;">
 <!-- BEGIN: Header -->
 <header class="bg-vander-navy text-white relative z-50">
 <!-- Top Utility Bar (desktop/tablet only â€” unchanged, just hidden below md) -->
@@ -527,76 +517,6 @@
   </div>
 </section>
 <!-- END: Trucks Equipment Section -->
-<!-- Featured Products -->
-<div class=""container-fluid py-5 px-5 bg-white"">
-    <h2 class=""section-title font-condensed text-center mb-5"" style=""font-size: 40px; color: #173753;"">Featured Products</h2>
-    <div class=""row"">
-        @forelse($products ?? [] as $product)
-            <div class=""col-md-6 col-lg-3 mb-4"">
-                <div class=""card h-100 shadow-sm border-0"">
-                    @if($product->primary_image_url)
-                        <img src=""{{ $product->primary_image_url }}"" class=""card-img-top p-3"" style=""object-fit: contain; height: 200px;"" alt=""{{ $product->name }}"">
-                    @else
-                        <img src=""{{ asset('img/product-' . (($loop->iteration % 18) + 1) . '.png') }}"" class=""card-img-top p-3"" style=""object-fit: contain; height: 200px;"" alt=""{{ $product->name }}"">
-                    @endif
-                    <div class=""card-body d-flex flex-column"">
-                        <h5 class=""card-title font-condensed"">{{ $product->name }}</h5>
-                        <p class=""card-text text-muted small flex-grow-1"">{{ Str::limit($product->description, 60) }}</p>
-                        <div class=""d-flex justify-content-between align-items-center mt-3"">
-                            <span class=""h5 mb-0 text-primary"">${{ number_format($product->price, 2) }}</span>
-                            @if($product->original_price)
-                                <small class=""text-decoration-line-through text-muted"">${{ number_format($product->original_price, 2) }}</small>
-                            @endif
-                        </div>
-                    </div>
-                    <div class=""card-footer bg-white border-top-0 pt-0"">
-                        <form method=""POST"" action=""{{ route('cart.add') }}"">
-                            @csrf
-                            <input type=""hidden"" name=""product_id"" value=""{{ $product->id }}"">
-                            <input type=""hidden"" name=""quantity"" value=""1"">
-                            <div class=""btn-group w-100"" role=""group"">
-                                <a href=""{{ route('product.show', $product->slug) }}"" class=""btn btn-outline-primary"">View</a>
-                                <button type=""submit"" class=""btn btn-primary"">Add to Cart</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class=""col-12"">
-                <p class=""text-center"">No featured products available.</p>
-            </div>
-        @endforelse
-    </div>
-</div>
-
-<!-- Categories -->
-<div class=""container-fluid py-5 px-5 bg-light"">
-    <h2 class=""section-title font-condensed text-center mb-5"" style=""font-size: 40px; color: #173753;"">Shop by Category</h2>
-    <div class=""row justify-content-center"">
-        @forelse($categories ?? [] as $category)
-            <div class=""col-md-3 mb-4"">
-                <a href=""{{ route('category.show', $category->slug) }}"" class=""text-decoration-none"">
-                    <div class=""card h-100 text-center shadow-sm border-0"">
-                        @if($category->image)
-                            <img src=""{{ asset('storage/' . $category->image) }}"" class=""card-img-top p-3"" style=""object-fit: contain; height: 150px;"" alt=""{{ $category->name }}"">
-                        @else
-                            <img src=""{{ asset('img/product-banner.jpg') }}"" class=""card-img-top p-3"" style=""object-fit: contain; height: 150px;"" alt=""{{ $category->name }}"">
-                        @endif
-                        <div class=""card-body"">
-                            <h5 class=""card-title font-condensed text-dark"">{{ $category->name }}</h5>
-                            <p class=""card-text text-muted"">{{ $category->products->count() }} products</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        @empty
-            <div class=""col-12"">
-                <p class=""text-center"">No categories available.</p>
-            </div>
-        @endforelse
-    </div>
-</div>
 <!-- BEGIN: Footer -->
 <footer class="bg-white pt-12 pb-0 border-t border-gray-200">
 <div class="container mx-auto px-4">
@@ -689,6 +609,4 @@
       CONTACT
     </button>
 </div>
-
-@endsection
-
+</body></html>
