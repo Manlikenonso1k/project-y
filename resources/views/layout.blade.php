@@ -28,6 +28,9 @@
     @stack('styles')
 </head>
 <body>
+@hasSection('full_page')
+    @yield('full_page')
+@else
     <!-- Topbar Start -->
     <div class="container-fluid px-5 d-none border-bottom d-lg-block">
         <div class="row gx-0 align-items-center">
@@ -176,5 +179,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
 
     @stack('scripts')
+@endif
 </body>
 </html>
+

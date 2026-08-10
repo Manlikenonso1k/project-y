@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "graphify": "powershell -ExecutionPolicy Bypass -File .\\scripts\\graphify-routes.ps1",
+        "graphify:all": "powershell -ExecutionPolicy Bypass -File .\\scripts\\graphify-routes.ps1 -Scope all"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
