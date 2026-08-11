@@ -1,211 +1,38 @@
-﻿<!DOCTYPE html><html lang="en"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Vander Haag's - Your Trucks &amp; Parts Headquarters</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<style data-purpose="custom-fonts">
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Condensed:wght@400;700&display=swap');
-    body {
-      font-family: 'Roboto', sans-serif;
-    }
-    .font-condensed {
-      font-family: 'Roboto Condensed', sans-serif;
-    }
-  </style>
-<!-- ============================================================ -->
-<!-- MOBILE-ONLY STYLESHEET                                        -->
-<!-- Every rule below is inside @media (max-width: 767px), so it   -->
-<!-- can NEVER change anything above 768px (desktop/tablet).       -->
-<!-- Do not add rules here without a max-width scope.               -->
-<!-- ============================================================ -->
-<style data-purpose="mobile-only-overrides">
-  @media (max-width: 767px) {
-    /* Hero: shrink + reposition the 87-years badge so it doesn't overflow */
-    #hero-badge { width: 7rem; height: 7rem; right: 1rem; bottom: -2rem; }
+@extends('layouts.app')
 
-    /* Headquarters heading: stack heading + "About Us" link, shrink font */
-    #hq-heading { flex-direction: column; }
-    #hq-heading-text { font-size: 24px; line-height: 33.6px; }
+@section('title', 'Vander Haag\'s - Your Trucks & Parts Headquarters')
 
-    /* Parts section: this is the big one â€” desktop uses an absolute
-       decorative background at 40% width plus a 42% left margin on
-       the content, which only works on wide screens. On mobile we
-       drop the decoration and let content go full width. */
-    #parts-bg-decor { display: none; }
-    #parts-content { margin-left: 0; padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
-    #parts-heading { font-size: 40px; line-height: 1.2; text-align: center; margin-bottom: 2rem; }
-    #parts-stats-row { flex-direction: column; gap: 2rem; padding-left: 0; padding-right: 0; }
-    #parts-links-grid { grid-template-columns: 1fr; text-align: center; justify-items: center; }
-
-    /* Footer: match the 3-column reference layout instead of the
-       desktop's 2-col / 4-col grids, and drop the desktop borders
-       between footer columns since they're stacked now. */
-    #footer-browse-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
-    #footer-locations-col { border-left: none; border-right: none; padding-left: 0; padding-right: 0; }
-    #footer-locations-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
-
-    /* General container breathing room on small screens */
-    main .container, section .container { padding-left: 1rem; padding-right: 1rem; }
-  }
-</style>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            vander: {
-              navy: '#1a365d',
-              blue: '#0056b3',
-              orange: '#ff9900',
-              gray: '#f4f4f4',
-              text: '#333333',
-              light: '#555555'
-            }
-          }
-        }
-      }
-    }
-  </script>
-<link data-snapdom="injected-import" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Condensed:wght@400;700&amp;display=swap" data-snapdom="injected-import"></head>
-<body class="bg-white text-vander-text overflow-y-auto" style="height: auto;">
-<!-- BEGIN: Header -->
-<header class="bg-vander-navy text-white relative z-50">
-<!-- Top Utility Bar (desktop/tablet only â€” unchanged, just hidden below md) -->
-<div class="hidden md:flex container mx-auto px-4 py-2 justify-between items-center border-b border-blue-900">
-<div class="flex items-center space-x-4">
-<button class="flex items-center space-x-2 hover:text-gray-300">
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</button>
-<a class="flex items-center" href="/">
-<img alt="Vander Haag's Logo" class="h-10" src="{{ asset('images/logo.png') }}">
-</a>
-</div>
-<div class="flex-1 max-w-2xl mx-8 relative h-10">
-<input class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed" placeholder="Search by part #, cross reference, keyword..." style="font-size: 20px; font-weight: 400; height: 40px; color: rgba(0, 0, 0, 0.75);" type="text">
-<button class="absolute right-0 top-0 bottom-0 bg-blue-600 px-6 rounded-r-full hover:bg-blue-700 transition-colors">
-<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</button>
-</div>
-<div class="flex items-center space-x-4 font-condensed" style="font-size: 18px; font-weight: 400; line-height: 75px; color: #fff;">
-<a class="hover:text-gray-300" href="/contactus.php">Email Us</a>
-<span class="text-gray-400">|</span>
-<a class="hover:text-gray-300" href="tel:1-888-940-5030">Call Us</a>
-<span class="text-gray-400">|</span>
-<a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
-<span class="text-gray-400">|</span>
-<a class="flex items-center hover:text-gray-300" href="/cart/cart.php">
-<svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span class="bg-gray-200 text-vander-navy rounded-full px-2 py-0.5 text-xs font-bold font-sans">0</span>
-</a>
-</div>
-</div>
-<!-- Main Navigation (desktop/tablet only â€” unchanged, just hidden below md) -->
-<nav class="hidden md:flex container mx-auto px-4 justify-between items-center h-12">
-<div class="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer font-condensed" style="font-size: 18px; font-weight: 400; line-height: 30px; color: #fff;">
-<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span class="">Add Vehicles to Filter</span>
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-<div class="flex space-x-8 font-condensed" style="font-size: 22px; font-weight: 400; line-height: 30px; color: #fff;">
-<a class="hover:text-gray-300 flex items-center" href="/truckparts.php">Truck Parts <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-<a class="hover:text-gray-300 flex items-center" href="/trucks.php">Units <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-<a class="hover:text-gray-300 flex items-center" href="/equipmentparts.php">Equipment Parts <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-<a class="hover:text-gray-300 flex items-center" href="/service.php">Service/Repair <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-</div>
-<div class="flex items-center text-red-400 hover:text-red-300 cursor-pointer font-condensed" style="font-size: 18px; font-weight: 400; line-height: 30px; color: #fff;">
-<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" style="color: rgb(190, 81, 81);"><path clip-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" fill-rule="evenodd"></path></svg>
-<span class="">Select a Location</span>
-<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: rgb(190, 81, 81);"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-</div>
-</nav>
-
-<!-- ============================================================ -->
-<!-- MOBILE-ONLY HEADER (visible below md / 768px). Reference: home_1_.jpeg -->
-<!-- The desktop utility bar + nav above are untouched; this is a  -->
-<!-- separate block that only appears on small screens.            -->
-<!-- ============================================================ -->
-<div class="md:hidden">
-  <!-- Row 1: menu, logo, sign in, cart -->
-  <div class="flex justify-between items-center px-4 py-2 border-b border-blue-900">
-    <div class="flex items-center gap-3">
-      <button aria-label="Open menu" id="mobile-menu-toggle">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-      </button>
-      <a href="/"><img alt="Vander Haag's Logo" class="h-8" src="{{ asset('images/logo.png') }}"></a>
-    </div>
-    <div class="flex items-center gap-2 font-condensed text-sm" style="color:#fff;">
-      <a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
-      <span class="text-gray-400">|</span>
-      <a class="relative flex items-center hover:text-gray-300" href="/cart/cart.php">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-        <span class="bg-gray-200 text-vander-navy rounded-full px-1.5 py-0.5 text-xs font-bold font-sans ml-1">0</span>
-      </a>
-    </div>
-  </div>
-  <!-- Row 2: search bar, full width -->
-  <div class="px-4 py-3">
-    <div class="relative h-10">
-      <input class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed text-sm" placeholder="Search by part #, cross reference, keyword" style="height:40px; color: rgba(0,0,0,0.75);" type="text">
-      <button class="absolute right-0 top-0 bottom-0 bg-blue-600 px-4 rounded-r-full">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-      </button>
-    </div>
-  </div>
-  <!-- Row 3: Add Vehicles to Filter / Select a Location -->
-  <div class="flex justify-between items-center px-4 py-2 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
-    <div class="flex items-center gap-1">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-      <span>Add Vehicles to Filter</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-    </div>
-  </div>
-  <div class="flex justify-end items-center px-4 pb-2 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
-    <div class="flex items-center gap-1" style="color: rgb(190, 81, 81);">
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" fill-rule="evenodd"></path></svg>
-      <span>Select a Location</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-    </div>
-  </div>
-  <!-- Row 4: Truck Parts / Units / Equipment Parts -->
-  <div class="flex justify-around items-center px-2 py-2 border-t border-blue-900 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
-    <a class="flex items-center gap-1" href="/truckparts.php">Truck Parts <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-    <a class="flex items-center gap-1" href="/trucks.php">Units <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-    <a class="flex items-center gap-1" href="/equipmentparts.php">Equipment Parts <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
-  </div>
-</div>
-</header>
-<!-- END: Header -->
+@section('content')
 <!-- BEGIN: Hero Section -->
 <section class="relative bg-vander-navy h-[350px] overflow-hidden flex flex-col justify-center items-center">
 <!-- Background Image -->
-<div class="absolute inset-0 z-0 opacity-80" style="background-image: url(&quot;{{ asset('images/hero-bg.jpg') }}&quot;); background-size: cover; background-position: center center;"></div>
+<div class="absolute inset-0 z-0 opacity-80" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCWOivuLAagm-djVSziBsPEDg2nd-JvVUScqVXIycxb4EGZArosPD9sgwxvP-9zBkMhxJOIkpRvZtHu86_wqPwRhvuC5OyUvyeVNGWGZ6arbHS-H2eHIYdiXCEbAqwcDTTMF0vztTvMLlousA59kfv8VTwJBYIP53vDhDBIec95bOX9RC3sssWELknOmeOsKBGaYnFcnoNlphBArIrJ82TjxixDUVVJrS9jmcZz4XIqFz6bg0JRabCfUmMDtS-oX24TMI8fpL1yNnop&quot;); background-size: cover; background-position: center center;"></div>
 <div class="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center">
 <!-- Icon Navigation (desktop/tablet only) -->
 <div class="hidden md:flex space-x-6 mb-8 mt-12">
 <a class="group flex flex-col items-center" href="/truckparts.php">
 <div class="w-24 h-24 border-2 border-white/50 rounded-xl flex items-center justify-center bg-black/30 group-hover:bg-white/10 transition-colors backdrop-blur-sm p-4">
-<img alt="Truck Parts" class="w-full h-full object-contain" src="{{ asset('images/icon-truck-parts.png') }}">
+<img alt="Truck Parts" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALjGC34k9SfA7gXFU8E3KDO27Glbf0PYtkoVit3di860LFxAVvijgP7t8gHGG_dNYwfrHmEqcdLrbnGxBtMSq9NUr-ORyCusJ64xZ_RJyMpnwFTclESCcMJAYihu9joNJwzg6L_-2tQbAaaUwpZbEejcup0-6OOt0qi23UbqHbcvHaQB-kktzzUnlEbRxZSTPoKmpq-MSpAOHktZD_VsJHIh5ESeDxL8DVPHFZPluf3ua11NK0gaEMpMxI6ARxOonr">
 </div>
 </a>
 <a class="group flex flex-col items-center" href="/equipmentparts.php">
 <div class="w-24 h-24 border-2 border-white/50 rounded-xl flex items-center justify-center bg-black/30 group-hover:bg-white/10 transition-colors backdrop-blur-sm p-4">
-<img alt="Equipment Parts" class="w-full h-full object-contain" src="{{ asset('images/icon-equipment-parts.png') }}">
+<img alt="Equipment Parts" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjuMIi0JQSDW2BYfrQxOb-e7Mbu6s_WOJfut8hCth-n2FNZ3QZ_v3XfLz9jtal_CXDEDLgpQNXWg-N6Ose2H56w7VZhWikbn8PEUVA7j0LRIPbR6bLaJ91zy-wX2FrezcF4WR_X1fkTd-YYIYJ6rebmbnhqTKEMRrRMVUMZxU5G2RscA5aA11s3NRKUVna90dVNNDoLNJR6twIph56VTIciUvwKl64DVMw2Ccmj4p8ErwIqjkbUvtc5IpyGklJVoQl">
 </div>
 </a>
 <a class="group flex flex-col items-center" href="/trucks.php">
 <div class="w-24 h-24 border-2 border-white/50 rounded-xl flex items-center justify-center bg-black/30 group-hover:bg-white/10 transition-colors backdrop-blur-sm p-4">
-<img alt="Trucks" class="w-full h-full object-contain" src="{{ asset('images/icon-trucks.png') }}">
+<img alt="Trucks" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsNoQA3_uV4OcVwC5IAHRtpbZp2bD7ThQPEBLj10BP-ZR7-CHkdXanl3S1W3IGmB6DmxDZhgbtvvkts-ocbDVVkoJtlfyIW6uWMGZQX2QEVnYdml5-qAD4y99puSYZrdRzMBKUPAtspL_y0pWtl2h8KRIyChEeiyoG7MYwGrpZljMzvXYWDihuja4aJGCPWdI-ut_DwpXrckrIBVd2Wm_vPnBOaUPRxeuSos32SK3bSVc8iMmGqmeB4b50AzECftcA">
 </div>
 </a>
 <a class="group flex flex-col items-center" href="/trailers.php">
 <div class="w-24 h-24 border-2 border-white/50 rounded-xl flex items-center justify-center bg-black/30 group-hover:bg-white/10 transition-colors backdrop-blur-sm p-4">
-<img alt="Trailers" class="w-full h-full object-contain" src="{{ asset('images/icon-trailers.png') }}">
+<img alt="Trailers" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ_Pyok-syFVtnMBX9vcm2aq4GSJ3HzG7KPDvrk1K89lKQd_qfvmzB2v6IgvUS1w5upaph5sGw09tpJInNxK-PRWQaIhwD25UmFt5kDxyZfqk8wIsHBOAc2QIrkyjDvw5LZACGQBwOq-einvI9lgfnhKzSfYANP9yDNDZ8Jg4Y9OfaPZjMU2-9RXjj0zzh1rsbMaTYzsppjNYJmaejConRjau70Nl49oN_q3G_kKXdruxTigS1PFkxyNZ6WTXocqaS">
 </div>
 </a>
 <a class="group flex flex-col items-center" href="/equipment.php">
 <div class="w-24 h-24 border-2 border-white/50 rounded-xl flex items-center justify-center bg-black/30 group-hover:bg-white/10 transition-colors backdrop-blur-sm p-4">
-<img alt="Equipment" class="w-full h-full object-contain" src="{{ asset('images/icon-equipment.png') }}">
+<img alt="Equipment" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDabWIXi_jJ7qaap31wQe18kmFZYg-iVKM2hw1CDw6crMeuV227dXWWVNubwg0LrBk0_T1twmm61LxCV95zkilc-dG1hpY1RlbTtwhX_zU64E3a1wIZm2Mo-DVawA-S2_U4a18zisF0hQO8FEOiRd1YwtApeqLgPmrAntCeCvVnz1dhkxozpaptB3RLl9wH2srKqUJ_TqVQaDS1W64iIIQ5WzO_uyIHf2g9WmxqRy-HmrJ4a_Jb5G6Z5ommDbFOx0nT">
 </div>
 </a>
 </div>
@@ -219,20 +46,12 @@
 </div>
 <!-- 87 Years Badge -->
 <div id="hero-badge" class="absolute right-12 -bottom-16 z-50">
-<img alt="87 Years Badge" class="w-40 h-40" src="{{ asset('images/badge-87-years.png') }}">
+<img alt="87 Years Badge" class="w-40 h-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpZx0bF2o0-uAYLELqXzqu3Ew4ZUKhHnIW52XoRRFM57SuzvZk1EJ_ZNYf6UXKJEllNwDDqh6vhuolAnoa77kpKCXQAdBNbVqJno6M-tg2D377bZMAMXbjEfQrmpcezgX0q59NoRZp6v8bqBqJpcor4cpoU9C9-II_Hg61GmnMfZpwOrcD8CrWzsHvt_FhKo8e312xN_LFxkoysVqk5XOXlt6qAAY_RatX3K0l8-5ZN5CAj5wv0T3TrPg_nr7EafatJwhc-L7OI-F1">
 </div>
 </section>
 <!-- END: Hero Section -->
 
-<!-- ============================================================ -->
-<!-- MOBILE-ONLY CATEGORY LIST (visible below md / 768px).         -->
-<!-- Reference: home_1_.jpeg. Replaces the desktop icon row above  -->
-<!-- for small screens only â€” desktop hero is untouched.           -->
-<!-- Icon files referenced per your spec: truck-parts.png,         -->
-<!-- equipmentparts.png, trucks.png, trailers.png, Equipment.png,  -->
-<!-- services.png, "Truck Equipment.png" â€” swap in your hosted     -->
-<!-- paths for these where noted below.                            -->
-<!-- ============================================================ -->
+<!-- MOBILE-ONLY CATEGORY LIST -->
 <div class="md:hidden">
   <a href="/truckparts.php" class="flex items-center justify-between px-4 py-4 bg-gray-100 border-b border-gray-200">
     <div class="flex items-center gap-4">
@@ -301,7 +120,7 @@
 
 <!-- BEGIN: Main Content -->
 <main class="relative bg-white py-16">
-<div class="absolute inset-0 z-0 opacity-10 bg-no-repeat bg-center bg-cover" style="background-image: url(&quot;{{ asset('images/bg-pattern.jpg') }}&quot;);"></div>
+<div class="absolute inset-0 z-0 opacity-10 bg-no-repeat bg-center bg-cover" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCHnv_h3gceDb496nwu3C39vctecz-IXj0Uk1QfTxBxOjwaewfVK_ldPZPbfedg4gNw7HZqBoxyIMV2XsXC3jeALNl1oMMzyjOu4pGP8YTQlYSPPijqDFmX41MiP2nkTCKporpVqH2Qsmb0VfOzWVGekn3LXXaxUKyGnCwuk_vHyXUSihnogzzQz6tXfThbUcyWMv6ir5k8R4Mq6GS7G14VgPGCsuluJ0KTuQfcgRzDVamHNxtCiCAy2fJ7XKe-TQFY&quot;);"></div>
 <div class="container mx-auto px-8 relative z-10">
 <div class="max-w-4xl mx-auto mb-16 text-center">
 <h1 id="hq-heading" class="flex items-center justify-center font-condensed" style="color: rgb(7, 81, 177);"><span id="hq-heading-text" style="font-family: &quot;Roboto Condensed&quot;, sans-serif; font-size: 44px; font-weight: 400; line-height: 61.6px; color: rgb(7, 81, 177);" class="">Your Trucks &amp; Parts Headquarters</span><a class="hover:text-vander-blue ml-4 flex items-center" href="/aboutus.php" style="font-family: &quot;Roboto Condensed&quot;, sans-serif; font-size: 16px; font-weight: 400; line-height: 24px; color: rgb(128, 128, 128); cursor: pointer;">About Us <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a></h1>
@@ -345,18 +164,19 @@
 </div>
 </main>
 <!-- END: Main Content -->
+
 <!-- BEGIN: Testimonials Section -->
 <section class="bg-[#0b3366] text-white py-16">
 <div class="container mx-auto px-4 text-center">
 <h2 class="text-3xl font-light mb-12 flex items-center justify-center">
-      TESTIMONIALS 
+      TESTIMONIALS
       <a class="text-sm ml-4 flex items-center hover:text-gray-300" href="/testimonials.php">See all <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
 </h2>
 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 <!-- Testimonial 1 -->
 <div class="bg-white text-gray-800 rounded-lg p-6 relative pt-12 shadow-lg mt-12">
 <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200">
-<img alt="Testimonial Author" class="w-full h-full object-cover" src="{{ asset('images/testimonial-1.jpg') }}">
+<img alt="Testimonial Author" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpjYns-28Sqz9PfYgF-4Y-u3_DV4sdNW8BxsasT2C-VeWo9Yy2cb18yZUd0r221Uka6aF4Qy4r3b8UoyOrSJoEuqRSNqkWYfzj-mqm_ce-0akjT8eAy5ArbhVdEnfsL-jBYQEYnUhIX5qMyRjEvaUZTjC2jdtbuIwu60CWHg4aME0NmW9OJ1bEk3DOE_tSDZGLbEvxQvEPHc5yAUaLZjQ8Ub-SSbfSJ46nxjMHXHreCx5ceYqRmV4">
 </div>
 <div class="text-[#0751b1] text-4xl font-serif absolute top-12 left-6">"</div>
 <p class="italic text-sm text-gray-600 mb-6 relative z-10 px-4 text-center">
@@ -371,7 +191,7 @@
 <!-- Testimonial 2 -->
 <div class="bg-white text-gray-800 rounded-lg p-6 relative pt-12 shadow-lg mt-12">
 <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-gray-200">
-<img alt="Testimonial Author" class="w-full h-full object-cover" src="{{ asset('images/testimonial-2.jpg') }}">
+<img alt="Testimonial Author" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7VS_Jo3Qxj53Ei0ik3hoyVT41TCatq_Ak3UFxgLZauIzt7DMcvb6igjgOfvjR1TMmPc3WSXguWgchINsR6G1-lEcYlmoBhld9HvDMCKRztVrd4WfUY0IAySCgZLyk1cXdpxydDfAZKxk7vBzGV3ejjhluD0cd-YVHN7Pk5kFczVFrAF0XVzlTiMZWn6o4K6QFhP6hHjPhNhmHQgB2bY2UTB71-GneeiWj8pttmT-eBcYPcrCn5fM">
 </div>
 <div class="text-[#0751b1] text-4xl font-serif absolute top-12 left-6">"</div>
 <p class="italic text-sm text-gray-600 mb-6 relative z-10 px-4 text-center">
@@ -386,7 +206,7 @@
 <!-- Testimonial 3 -->
 <div class="bg-white text-gray-800 rounded-lg p-6 relative pt-12 shadow-lg mt-12">
 <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-white">
-<img alt="Testimonial Author" class="w-full h-full object-contain p-2" src="{{ asset('images/testimonial-3.jpg') }}">
+<img alt="Testimonial Author" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAXuJOUK7bW9uWof3P7-yrRTNulzUahGPLj5axEcBycLDzCx8bFETlxtzW38Kof_uZdIgvck2wxd2hUZgVd9q9-rsUSbEQ4kLSlbAFhyiun4fII94GenJhUmp23thfHgc1Wg98fYqJIrfAZUz3bXCO6XyxMSRbsaY7B30uyUDzBFz0lFLRyxypHaop9YCDjRFWUaSN8q0aMg481Fvy6I82i5Z6NvSEtuyrwBgzUuVsLNkHeGCmEIs">
 </div>
 <div class="text-[#0751b1] text-4xl font-serif absolute top-12 left-6">"</div>
 <p class="italic text-sm text-gray-600 mb-6 relative z-10 px-4 text-center">
@@ -401,7 +221,7 @@
 <!-- Testimonial 4 -->
 <div class="bg-white text-gray-800 rounded-lg p-6 relative pt-12 shadow-lg mt-12">
 <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 rounded-full border-4 border-white overflow-hidden bg-white">
-<img alt="Testimonial Author" class="w-full h-full object-contain p-2" src="{{ asset('images/testimonial-4.jpg') }}">
+<img alt="Testimonial Author" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgtbmXO5lt--KlimlYMDQ6oJxb4MenfvKagNFSpD9JCLR03W4WOiSSsoxCiosk8JBKe1erXfuUEotBPdefmKxuydLoJKN83Tq5EZZgsNJvYc2dwPp_H-iui7-EAkxn3i3ZyFbl7zcVsfKmsh8Ya2yB4AsCAOmgju5xXn9t-vGdGcG-5viuG0Unoa2rrUvTjCco3m-538ujAIrj03A064lXMwr0K1MHX1dvdPt3m0SEFTSCgu4Titg">
 </div>
 <div class="text-[#0751b1] text-4xl font-serif absolute top-12 left-6">"</div>
 <p class="italic text-sm text-gray-600 mb-6 relative z-10 px-4 text-center">
@@ -417,12 +237,13 @@
 </div>
 </section>
 <!-- END: Testimonials Section -->
+
 <!-- BEGIN: Parts Section -->
-<section class="py-16 bg-white relative overflow-hidden"><div id="parts-bg-decor" class="absolute top-0 bottom-0 left-0 w-[40%] bg-cover bg-center z-0" style="background-image: url(&quot;{{ asset('images/parts-bg.jpg') }}&quot;); clip-path: ellipse(100% 70% at 0% 50%);"></div>
+<section class="py-16 bg-white relative overflow-hidden"><div id="parts-bg-decor" class="absolute top-0 bottom-0 left-0 w-[40%] bg-cover bg-center z-0" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuBm1dXqQZO5qq0huZaYWEP1SYz_0rWJNVUEO9nDG721uzc6xYdAmFvU77cRpKOHKgUrif-yYa4-mXQ5cPDvm8hnqaTBnStQFInTZTC8gjMY41eE0Je7S1A-seccD4yg2uwsG6LlOF8IeZHDFqHJZoIFHJxLZODvmkiy_w1PNSA-VD5Jk-N309tREBKroOBVdAtLcMH__Lre4D6O89ly2dajJq-QJk44KncBoG4F6_PnxKWZzODpeZTIzrY_dpqrTw0C&quot;); clip-path: ellipse(100% 70% at 0% 50%);"></div>
 <div id="parts-content" class="px-4 relative z-10 ml-[42%] pr-12 max-w-5xl">
 <h2 id="parts-heading" class="font-condensed text-right" style="font-size: 80px; font-weight: 400; line-height: 25px; color: rgb(23, 55, 83); text-align: right; margin-bottom: 3rem;">PARTS</h2><div class="flex flex-col md:flex-row items-center mb-16">
 <div class="w-full md:w-1/3 mb-8 md:mb-0">
-<img alt="TPS Distributor of the Year" class="mx-auto -mt-12" src="{{ asset('images/tps-award.png') }}" style="width: 150px; height: 120px; object-fit: contain;">
+<img alt="TPS Distributor of the Year" class="mx-auto -mt-12" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5Y27vh2bWwL4ZHHgfXjklP_9WywVWUBkNKxQ0LNdw9E9re81AzRA2DhMAfPH8oLXgaKQeHy8HU9zEgZMxVxVJw314qc2IoiHzBkpAV1lFhckRL54CEk9XpL9oRxe83kQlW3t1lLCc_lOW1G1pCYh5sXuOgnLXdiUDx2mRc5sbBGWjXX70xoaxjpM6Zd7WX5BBt4Xj4Ywsx8X08O5k0Tns6XQW1TPqX2Clr0gFfuZ2sl5rOFFnlf4cdk6ZvmAjw6aH" style="width: 150px; height: 120px; object-fit: contain;">
 </div>
 <div id="parts-stats-row" class="w-full md:w-2/3 flex text-center px-8 justify-around">
 <div class="flex flex-col items-center">
@@ -460,12 +281,13 @@
 </div>
 </section>
 <!-- END: Parts Section -->
+
 <!-- BEGIN: Service Section -->
 <section class="py-16 relative border-t border-gray-200 overflow-hidden bg-white">
-<div class="absolute inset-0 z-0 opacity-5" style="background-image: url(&quot;{{ asset('images/service-bg.jpg') }}&quot;); background-repeat: no-repeat; background-position: right center; background-size: 800px;"></div>
+<div class="absolute inset-0 z-0 opacity-5" style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuDqyM8bftIIsKj7dFpDa-XnPW-Mrt0PpTFyOVlcmpIJO4fyj3dCAWB_b5NXDzJlQ0q41CVNDcot53R5A4sDsqRF0Bz6Ydg3zaw3YUfsEI1qKv6Oa8UndjIo8SGj1MM-U4Hvx-Afij_nNyAWGvmvYazfzzrtWzmhjFCGG-NQ9tyu_D9kCVDxp8ZefJbwsAPWvgTPvXRzCPTseAyzLFMQsjiaAmPzsyB6ncxF4i2VGN7A656fbrUCGw8&quot;); background-repeat: no-repeat; background-position: right center; background-size: 800px;"></div>
 <div class="container mx-auto px-4 relative z-10 flex flex-col md:flex-row"><div class="w-full md:w-1/2 pr-8">
 <h2 class="text-4xl font-light italic text-[#0751b1] mb-6 flex items-center">
-        SERVICE / REPAIR 
+        SERVICE / REPAIR
         <a class="text-sm font-normal text-gray-500 ml-4 hover:text-[#0751b1] flex items-center not-italic" href="/service.php">More <i class="fa fa-external-link ml-1"></i></a>
 </h2>
 <p class="text-gray-600 leading-relaxed mb-8">
@@ -490,20 +312,21 @@
 </div>
 </div>
 <div class="w-full md:w-1/2 flex items-center justify-center">
-<img src="{{ asset('images/service-map.jpg') }}" alt="Service Locations Map" class="w-full h-auto rounded shadow-lg">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvERANuyWu9VFu9QSPCIqmdlOrwkwNVi0C9swP42NhH4Hrdr_LdO80RjNCMGRYfpUKbh-MUNvYbUI0VpGDQln3OK-7T65baaFbR6A8BXQiu1GFcairEW2bPcQWCMXSdnGlO5AO9HuVKYmdtmr-qog8JiJd5JqMSF9Fjg8dvr3RQnMKQR1La13IgiX4syyZICpLfx2jEPwgxmIFiBvzXWILzjh9oUTQrJJP2xpB89iL26s7giXvI7QljyiVQvXMrsh5" alt="Service Locations Map" class="w-full h-auto rounded shadow-lg">
 </div></div>
 </section>
 <!-- END: Service Section -->
+
 <!-- BEGIN: Trucks Equipment Section -->
 <section class="relative py-24 text-white overflow-hidden bg-[#2d2d2d]" style="clip-path: polygon(0px 15%, 100% 0px, 100% 100%, 0px 100%);">
   <!-- Background Image at Bottom -->
-  <div class="absolute inset-0 z-0 opacity-40 bg-cover bg-bottom" style="background-image: url('{{ asset('images/trucks-bg.jpg') }}');"></div>
-  
+  <div class="absolute inset-0 z-0 opacity-40 bg-cover bg-bottom" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBDped6QtWszBNSy8exttkSIHiC7X2cLYw9gDnLrBmYjfCfCZ8kJaSki76cIyYwuAM0Hr6DNzh7kZMsyM2Cp-4UmZafuZMAOLSFw6RVwsAkQFDwKa4pUZ2JNqOZEf1x3ulr6RFKK_Ji5i9SJhdh9c6Kb0FUvz26YmB2g6EU3YloL1iS0LzPCNnU5bsDqVrMQOw5XIZqNmqQAwN9BrznajhIX16o8globQrUdsp5dRB6dKp90cnh_nwRVQJR9EGJqyMP');"></div>
+
   <div class="container mx-auto px-8 relative z-10 flex flex-col md:flex-row items-center">
     <!-- Left Side: Badge -->
     <div class="w-full md:w-1/3 flex justify-center md:justify-start mb-8 md:mb-0">
       <div class="border-4 border-white/20 p-1">
-        <img alt="UTA Individual Member of the Year" class="w-full max-w-[280px] h-auto" src="{{ asset('images/uta-award.jpg') }}">
+        <img alt="UTA Individual Member of the Year" class="w-full max-w-[280px] h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_0CSXST-fWNE6j8wvnNnSWWCZl6ZbPOT2gX6W1_FxQeRE3IibXl_g5uISKBFrAlbjS-P5HsJXGFCC4YzjxKJ71ANHVuCmKIwTMypVObLnp3ZxJwg1q0ScTo5Av1tK2GWJN4NbZDBrtQ06FlNCjpnv_n9KK9ANlrxQgFYGyI7llNggieJOxHxxfrIbJgeVNIR3e8zRyUVa6SrlqkIFmyRwcGAz7aRNXsq7MmB_kxA0qd5pZpkKD89GV8sk7tzaBYVl">
       </div>
     </div>
 
@@ -517,96 +340,4 @@
   </div>
 </section>
 <!-- END: Trucks Equipment Section -->
-<!-- BEGIN: Footer -->
-<footer class="bg-white pt-12 pb-0 border-t border-gray-200">
-<div class="container mx-auto px-4">
-<!-- Also Of Interest -->
-<div class="flex items-center mb-8 pb-4 border-b border-gray-200 text-sm">
-<span class="text-gray-500 mr-8 whitespace-nowrap">ALSO OF INTEREST</span>
-<div class="flex space-x-6 text-gray-700">
-<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/Search-Results.php?inventorytype=engine-assembly">Quality Inspected Used Engines</a>
-<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/service.php">Semi Truck Service &amp; Repair</a>
-<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/Search-Results.php?inventorytype=transmission">Quality Inspected Used/Rebuilt Transmissions</a>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-<!-- Browse Online -->
-<div class="md:col-span-1">
-<h3 class="text-lg text-gray-700 mb-4 pb-2 border-b border-gray-200">Browse Online</h3>
-<div id="footer-browse-grid" class="grid grid-cols-2 gap-x-4 gap-y-2 pr-4" style="font-family: &quot;Roboto Condensed&quot;, sans-serif; font-size: 16px; font-weight: 400; text-align: justify; line-height: 24px; color: rgb(51, 48, 48);">
-
-<a class="hover:underline text-[#333030]" href="/aboutus.php">About Us</a>
-<a class="hover:underline text-[#333030]" href="/Search-Results.php?inventorytype=truck">Trucks &amp; Trailers</a>
-<a class="hover:underline text-[#333030]" href="/cart/cart.php">Cart</a>
-<a class="hover:underline text-[#333030]" href="/help.php">FAQ / Help</a>
-<a class="hover:underline text-[#333030]" href="/equipmentparts.php">Equipment Parts</a>
-<a class="hover:underline text-[#333030]" href="/Catalog/Flyer.pdf">Catalog</a>
-<a class="hover:underline text-[#333030]" href="/contactus.php">Contact Us</a>
-<a class="hover:underline text-[#333030]" href="/sell-your-truck.php">We Buy Trucks</a>
-<a class="hover:underline text-[#333030]" href="http://www.yesterdaysmemories.us/">Museum</a>
-<a class="hover:underline text-[#333030]" href="/employment.php">Employment</a>
-<a class="hover:underline text-[#333030]" href="/shippingandreturns.php">Shipping &amp; Returns</a>
-<a class="hover:underline text-[#333030]" href="/warranty.php">Warranty</a>
-<a class="hover:underline text-[#333030]" href="/account/ordersearch.php">Order Search</a>
-<a class="hover:underline text-[#333030]" href="/login.php">Log In / Account</a>
-<a class="hover:underline text-[#333030]" href="/service.php">Service</a>
-<a class="hover:underline text-[#333030]" href="/truckparts.php">Truck Parts</a>
-<a class="hover:underline text-[#333030]" href="tel:1-888-940-5030">888.940.5030</a>
-</div>
-</div>
-<!-- Our Locations -->
-<div id="footer-locations-col" class="md:col-span-2 pl-8 border-l border-gray-200 border-r pr-8">
-<div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-200">
-<h3 class="text-lg text-gray-700">Our Locations</h3>
-<a class="text-sm text-[#0751b1] hover:underline flex items-center" href="/map.php">View Map <i class="fa fa-external-link ml-1"></i></a>
-</div>
-<p class="text-sm text-gray-600 mb-4">
-          While Vander Haag's, Inc still holds strong to its family focused values that have been at the core of the business since first opening in 1939, the company now features 12 Midwest locations selling quality used/rebuilt/new truck parts, selling commercial trucks &amp; trailers, and providing full service heavy duty truck repair.
-        </p>
-<div id="footer-locations-grid" class="grid grid-cols-4 gap-y-2 text-sm text-[#0751b1]">
-<a class="hover:underline" href="/location.php?store=Spencer"><i class="fa fa-map-marker text-red-600 mr-1"></i> Spencer, IA</a>
-<a class="hover:underline" href="/location.php?store=Des+Moines"><i class="fa fa-map-marker text-red-600 mr-1"></i> Des Moines, IA</a>
-<a class="hover:underline" href="/location.php?store=Sioux+Falls"><i class="fa fa-map-marker text-red-600 mr-1"></i> Sioux Falls, SD</a>
-<a class="hover:underline" href="/location.php?store=Council+Bluffs"><i class="fa fa-map-marker text-red-600 mr-1"></i> Council Bluffs, IA</a>
-<a class="hover:underline" href="/location.php?store=Kansas+City"><i class="fa fa-map-marker text-red-600 mr-1"></i> Kansas City, MO</a>
-<a class="hover:underline" href="/location.php?store=Winamac"><i class="fa fa-map-marker text-red-600 mr-1"></i> Winamac, IN</a>
-<a class="hover:underline" href="/location.php?store=Indianapolis"><i class="fa fa-map-marker text-red-600 mr-1"></i> Indianapolis, IN</a>
-<a class="hover:underline" href="/location.php?store=Columbus"><i class="fa fa-map-marker text-red-600 mr-1"></i> London, OH</a>
-<a class="hover:underline" href="/location.php?store=Louisville"><i class="fa fa-map-marker text-red-600 mr-1"></i> Louisville, KY</a>
-<a class="hover:underline" href="/location.php?store=Dallas"><i class="fa fa-map-marker text-red-600 mr-1"></i> Dallas, TX</a>
-<a class="hover:underline" href="/location.php?store=St+Louis"><i class="fa fa-map-marker text-red-600 mr-1"></i> Bridgeton, MO</a>
-<a class="hover:underline" href="/location.php?store=Stephenville"><i class="fa fa-map-marker text-red-600 mr-1"></i> Stephenville, TX</a>
-</div>
-</div>
-<!-- Connect -->
-<div class="md:col-span-1">
-<div class="flex items-center mb-4 pb-2 border-b border-gray-200">
-<h3 class="text-lg text-gray-700 mr-4">Connect</h3>
-<div class="flex space-x-2">
-<a class="bg-[#3b5998] text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="https://www.facebook.com/VanderHaagsInc"><i class="fa fa-facebook"></i></a>
-<a class="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="https://www.instagram.com/vanderhaagsinc"><i class="fa fa-instagram"></i></a>
-<a class="bg-[#0077b5] text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="http://www.linkedin.com/company/vander-haag's-inc-?trk=company_name"><i class="fa fa-linkedin"></i></a>
-</div>
-</div>
-<div class="mt-6">
-<p class="text-xs text-gray-500 mb-2">Subscribe for promotional content</p>
-<input class="w-full bg-gray-200 border-none rounded py-2 px-3 mb-3 text-sm focus:ring-0" placeholder="Email Address" type="email">
-<button class="bg-[#0751b1] text-white font-medium py-2 px-6 rounded hover:bg-blue-700 text-sm">Subscribe</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Copyright -->
-<div class="bg-[#0b3366] text-white text-center py-3 text-xs">
-    Â© Vander Haag's Inc. 2026 - <a class="hover:underline" href="/privacy.php">Privacy Policy</a>
-</div>
-</footer>
-<!-- END: Footer -->
-<!-- Floating Contact Button -->
-<div class="fixed bottom-0 right-0 z-50">
-<button class="bg-vander-orange hover:bg-orange-600 text-white font-bold py-4 px-6 flex items-center shadow-lg rounded-tl-lg transition-colors">
-<svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" fill-rule="evenodd"></path></svg>
-      CONTACT
-    </button>
-</div>
-</body></html>
+@endsection
