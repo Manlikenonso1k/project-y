@@ -25,72 +25,34 @@
     <!-- Custom CSS -->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
+    <!-- Vite Assets (for Tailwind / header+footer component styles) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style data-purpose="mobile-only-overrides">
+        @media (max-width: 767px) {
+            #hero-badge { width: 7rem; height: 7rem; right: 1rem; bottom: -2rem; }
+            #hq-heading { flex-direction: column; }
+            #hq-heading-text { font-size: 24px; line-height: 33.6px; }
+            #parts-bg-decor { display: none; }
+            #parts-content { margin-left: 0; padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+            #parts-heading { font-size: 40px; line-height: 1.2; text-align: center; margin-bottom: 2rem; }
+            #parts-stats-row { flex-direction: column; gap: 2rem; padding-left: 0; padding-right: 0; }
+            #parts-links-grid { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+            #footer-browse-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
+            #footer-locations-col { border-left: none; border-right: none; padding-left: 0; padding-right: 0; }
+            #footer-locations-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
+            main .container, section .container { padding-left: 1rem; padding-right: 1rem; }
+        }
+    </style>
+
     @stack('styles')
 </head>
-<body>
+<body class="bg-white text-vander-text overflow-y-auto" style="height: auto;">
 @hasSection('full_page')
     @yield('full_page')
 @else
-    <!-- Topbar Start -->
-    <div class="container-fluid px-5 d-none border-bottom d-lg-block">
-        <div class="row gx-0 align-items-center">
-            <div class="col-lg-4 text-center text-lg-start mb-lg-0">
-                <div class="d-inline-flex align-items-center" style="height: 45px;">
-                    <a href="#" class="text-muted me-2">Help</a><small> / </small>
-                    <a href="#" class="text-muted mx-2">Support</a><small> / </small>
-                    <a href="#" class="text-muted ms-2">Contact</a>
-                </div>
-            </div>
-            <div class="col-lg-4 text-center d-flex align-items-center justify-content-center">
-                <small class="text-dark">Call Us:</small>
-                <a href="#" class="text-muted">(+012) 1234 567890</a>
-            </div>
-            <div class="col-lg-4 text-center text-lg-end">
-                <div class="d-inline-flex align-items-center" style="height: 45px;">
-                    @if(auth()->check())
-                        <div class="dropdown">
-                            <a href="#" class="dropdown-toggle text-muted ms-2" data-bs-toggle="dropdown"><small><i class="fa fa-home me-2"></i> {{ auth()->user()->name }}</small></a>
-                            <div class="dropdown-menu rounded">
-                                <a href="{{ route('cart.index') }}" class="dropdown-item">My Cart</a>
-                                <a href="{{ route('checkout.show') }}" class="dropdown-item">Checkout</a>
-                                <a href="{{ url('/admin') }}" class="dropdown-item">Admin Panel</a>
-                            </div>
-                        </div>
-                    @else
-                        <div>
-                            <a href="{{ url('/admin/login') }}" class="text-muted ms-2"><small><i class="fa fa-user me-2"></i>Admin</small></a>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Topbar End -->
-
-    <!-- Navbar Start -->
-    <div class="container-fluid py-3 px-5 nav-bar sticky-top">
-        <div class="row gx-0 align-items-center">
-            <div class="col-lg-2">
-                <h1 class="mb-0"><a href="{{ route('home') }}" class="text-primary"><i class="fas fa-bolt text-primary"></i> Project X</a></h1>
-            </div>
-            <div class="col-lg-8">
-                <form class="input-group" method="GET" action="{{ route('shop.index') }}">
-                    <input type="text" name="search" class="form-control bg-transparent" placeholder="Search for Products" value="{{ request('search') }}">
-                    <button class="btn btn-primary" type="submit">Search</button>
-                </form>
-            </div>
-            <div class="col-lg-2 text-end">
-                <a href="{{ route('cart.index') }}" class="btn btn-primary position-relative d-inline-flex align-items-center gap-2 px-3" aria-label="View cart">
-                    <i class="bi bi-cart3" aria-hidden="true"></i>
-                    <span class="d-none d-md-inline">Cart</span>
-                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                        {{ $cartCount ?? 0 }}
-                    </span>
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- Navbar End -->
+    <!-- Global Header -->
+    <x-header />
 
     <!-- Breadcrumb Start -->
     @if(Route::currentRouteName() !== 'home')
@@ -127,50 +89,8 @@
     <!-- Main Content -->
     @yield('content')
 
-    <!-- Footer Start -->
-    <div class="bg-dark text-white mt-5 py-5 px-5">
-        <div class="row">
-            <div class="col-md-6 col-lg-3 mb-4">
-                <h5 class="text-white mb-4">Quick Links</h5>
-                <a href="{{ route('home') }}" class="text-decoration-none text-white-50 d-block mb-2">Home</a>
-                <a href="{{ route('shop.index') }}" class="text-decoration-none text-white-50 d-block mb-2">Shop</a>
-                <a href="{{ route('contact') }}" class="text-decoration-none text-white-50 d-block mb-2">Contact</a>
-                <a href="{{ route('about') }}" class="text-decoration-none text-white-50 d-block mb-2">About</a>
-            </div>
-            <div class="col-md-6 col-lg-3 mb-4">
-                <h5 class="text-white mb-4">Account</h5>
-                @if(auth()->check())
-                    <a href="{{ route('cart.index') }}" class="text-decoration-none text-white-50 d-block mb-2">My Cart</a>
-                    <a href="{{ route('checkout.show') }}" class="text-decoration-none text-white-50 d-block mb-2">Checkout</a>
-                @else
-                    <a href="{{ url('/admin/login') }}" class="text-decoration-none text-white-50 d-block mb-2">Admin Login</a>
-                    <a href="{{ route('shop.index') }}" class="text-decoration-none text-white-50 d-block mb-2">Continue Shopping</a>
-                @endif
-            </div>
-            <div class="col-md-6 col-lg-3 mb-4">
-                <h5 class="text-white mb-4">Company</h5>
-                <a href="#" class="text-decoration-none text-white-50 d-block mb-2">Support</a>
-                <a href="#" class="text-decoration-none text-white-50 d-block mb-2">Privacy Policy</a>
-                <a href="#" class="text-decoration-none text-white-50 d-block mb-2">Terms & Conditions</a>
-            </div>
-            <div class="col-md-6 col-lg-3 mb-4">
-                <h5 class="text-white mb-4">Newsletter</h5>
-                <p class="text-white-50 mb-3">Subscribe to our newsletter for updates</p>
-                <form method="POST" action="#">
-                    @csrf
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your Email" required>
-                        <button class="btn btn-primary" type="submit">Subscribe</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-dark text-white text-center py-4 px-5">
-        <p class="m-0">&copy; 2026 Project X Shop. All Rights Reserved.</p>
-    </div>
-    <!-- Footer End -->
+    <!-- Global Footer -->
+    <x-footer />
 
     <!-- Bootstrap JS -->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
@@ -182,4 +102,3 @@
 @endif
 </body>
 </html>
-

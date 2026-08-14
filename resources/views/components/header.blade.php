@@ -9,12 +9,12 @@
 <img alt="Vander Haag's Logo" class="h-10" src="{{ asset('images/logo.png') }}">
 </a>
 </div>
-<div class="flex-1 max-w-2xl mx-8 relative h-10">
-<input class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed" placeholder="Search by part #, cross reference, keyword..." style="font-size: 20px; font-weight: 400; height: 40px; color: rgba(0, 0, 0, 0.75);" type="text">
-<button class="absolute right-0 top-0 bottom-0 bg-blue-600 px-6 rounded-r-full hover:bg-blue-700 transition-colors">
+<form class="flex-1 max-w-2xl mx-8 relative h-10" method="GET" action="{{ route('shop.index') }}">
+<input name="search" value="{{ request('search') }}" class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed bg-white" placeholder="Search by part #, cross reference, keyword..." style="font-size: 20px; font-weight: 400; height: 40px; color: rgba(0, 0, 0, 0.75); background-color: #ffffff;" type="text">
+<button type="submit" class="absolute right-0 top-0 bottom-0 bg-blue-600 px-6 rounded-r-full hover:bg-blue-700 transition-colors">
 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 </button>
-</div>
+</form>
 <div class="flex items-center space-x-4 font-condensed" style="font-size: 18px; font-weight: 400; line-height: 75px; color: #fff;">
 <a class="hover:text-gray-300" href="/contactus.php">Email Us</a>
 <span class="text-gray-400">|</span>
@@ -22,9 +22,9 @@
 <span class="text-gray-400">|</span>
 <a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
 <span class="text-gray-400">|</span>
-<a class="flex items-center hover:text-gray-300" href="/cart/cart.php">
+<a class="flex items-center hover:text-gray-300" href="{{ route('cart.index') }}">
 <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span class="bg-gray-200 text-vander-navy rounded-full px-2 py-0.5 text-xs font-bold font-sans">0</span>
+<span class="bg-gray-200 text-vander-navy rounded-full px-2 py-0.5 text-xs font-bold font-sans">{{ $cartCount ?? 0 }}</span>
 </a>
 </div>
 </div>
@@ -61,21 +61,21 @@
     <div class="flex items-center gap-2 font-condensed text-sm" style="color:#fff;">
       <a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
       <span class="text-gray-400">|</span>
-      <a class="relative flex items-center hover:text-gray-300" href="/cart/cart.php">
+      <a class="relative flex items-center hover:text-gray-300" href="{{ route('cart.index') }}">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-        <span class="bg-gray-200 text-vander-navy rounded-full px-1.5 py-0.5 text-xs font-bold font-sans ml-1">0</span>
+        <span class="bg-gray-200 text-vander-navy rounded-full px-1.5 py-0.5 text-xs font-bold font-sans ml-1">{{ $cartCount ?? 0 }}</span>
       </a>
     </div>
   </div>
   <!-- Row 2: search bar, full width -->
-  <div class="px-4 py-3">
+  <form class="px-4 py-3" method="GET" action="{{ route('shop.index') }}">
     <div class="relative h-10">
-      <input class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed text-sm" placeholder="Search by part #, cross reference, keyword" style="height:40px; color: rgba(0,0,0,0.75);" type="text">
-      <button class="absolute right-0 top-0 bottom-0 bg-blue-600 px-4 rounded-r-full">
+      <input name="search" value="{{ request('search') }}" class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed text-sm bg-white" placeholder="Search by part #, cross reference, keyword" style="height:40px; color: rgba(0,0,0,0.75); background-color: #ffffff;" type="text">
+      <button type="submit" class="absolute right-0 top-0 bottom-0 bg-blue-600 px-4 rounded-r-full">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
       </button>
     </div>
-  </div>
+  </form>
   <!-- Row 3: Add Vehicles to Filter / Select a Location -->
   <div class="flex justify-between items-center px-4 py-2 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
     <div class="flex items-center gap-1">

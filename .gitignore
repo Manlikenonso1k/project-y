@@ -53,3 +53,5 @@ auth.json
 .env.*.local
 config/php.ini
 auth.json
+/prompt
+/prompt/data.sql
