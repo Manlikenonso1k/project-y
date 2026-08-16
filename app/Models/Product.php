@@ -77,8 +77,15 @@ class Product extends Model
 
     public function getPrimaryImageUrlAttribute(): ?string
     {
-        return $this->resolveImageUrl($this->primary_image_path)
+        $resolved = $this->resolveImageUrl($this->primary_image_path)
             ?? (filled($this->image_url) ? $this->image_url : null);
+
+        // Fallback to unavailable image when no product image is set
+        if (blank($resolved)) {
+            return asset('images/unavailable.jpg');
+        }
+
+        return $resolved;
     }
 
     public function getGalleryImageUrlsAttribute(): array
