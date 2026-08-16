@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,6 +10,21 @@ use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
+    /**
+     * Columns covered by the products_search_fulltext FULLTEXT index (MySQL/MariaDB)
+     * and used as fallback LIKE searches on every other driver.
+     *
+     * @var array<int, string>
+     */
+    protected const SEARCHABLE_FIELDS = [
+        'name',
+        'engine',
+        'transmission',
+        'gvw',
+        'store',
+        'ecm_miles',
+    ];
+
     protected $fillable = [
         'name',
         'slug',
@@ -23,6 +39,14 @@ class Product extends Model
         'is_active',
         'views_count',
         'is_variable',
+        'engine',
+        'transmission',
+        'gvw',
+        'store',
+        'ecm_miles',
+        'youtube_url',
+        'extra_description',
+        'image_url',
     ];
 
     protected $casts = [
@@ -53,7 +77,8 @@ class Product extends Model
 
     public function getPrimaryImageUrlAttribute(): ?string
     {
-        return $this->resolveImageUrl($this->primary_image_path);
+        return $this->resolveImageUrl($this->primary_image_path)
+            ?? (filled($this->image_url) ? $this->image_url : null);
     }
 
     public function getGalleryImageUrlsAttribute(): array
@@ -87,6 +112,62 @@ class Product extends Model
         }
 
         return Storage::disk('public')->url($path);
+    }
+
+    /**
+     * Full-text search across the SEARCHABLE_FIELDS columns.
+     *
+     * On MySQL/MariaDB this uses the products_search_fulltext FULLTEXT index
+     * with a boolean-mode query. Every other driver (SQLite, PostgreSQL, ...)
+     * falls back to the LIKE-based scopeSearch() so the feature keeps working
+     * everywhere, including the local SQLite environment.
+     */
+    public function scopeSearchable(Builder $query, string $term): Builder
+    {
+        $term = trim($term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        $driver = $query->getConnection()->getDriverName();
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            $columns = implode(', ', array_map(
+                fn (string $column): string => $query->getConnection()->getQueryGrammar()->wrap($column),
+                static::SEARCHABLE_FIELDS,
+            ));
+
+            // Sanitize the term and run it as a boolean-mode phrase with a trailing
+            // wildcard so "tro" also matches "transmission", etc.
+            $escaped = str_replace('"', '', $term);
+
+            return $query->whereRaw(
+                "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
+                [sprintf('"%s"*', $escaped)],
+            );
+        }
+
+        return $query->search($term);
+    }
+
+    /**
+     * Portable "contains" search across the searchable columns.
+     * Used as a fallback when the database driver has no FULLTEXT index.
+     */
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $term = trim($term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        return $query->where(function (Builder $query) use ($term): void {
+            foreach (static::SEARCHABLE_FIELDS as $field) {
+                $query->orWhere($field, 'like', '%'.$term.'%');
+            }
+        });
     }
 
     public function category(): BelongsTo
