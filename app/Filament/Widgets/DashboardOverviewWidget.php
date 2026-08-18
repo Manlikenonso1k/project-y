@@ -61,25 +61,20 @@ class DashboardOverviewWidget extends StatsOverviewWidget
 
     private function getBestCategorySummary(): ?array
     {
-        $categories = Category::query()->with(['products.orderItems'])->get();
+        // Single query with pre-computed sums to avoid N+1
+        $categories = Category::query()
+            ->with(['products.orderItems'])
+            ->get()
+            ->map(fn (Category $category): array => [
+                'name' => $category->name,
+                'units_sold' => $category->products->sum(fn ($product) =>
+                    $product->orderItems->sum('quantity')
+                ),
+                'revenue' => $category->products->sum(fn ($product) =>
+                    (float) $product->orderItems->sum('total')
+                ),
+            ]);
 
-        return $categories
-            ->map(function (Category $category): array {
-                $unitsSold = $category->products->sum(
-                    fn ($product): int => $product->orderItems->sum('quantity'),
-                );
-
-                $revenue = $category->products->sum(
-                    fn ($product): float => (float) $product->orderItems->sum('total'),
-                );
-
-                return [
-                    'name' => $category->name,
-                    'units_sold' => $unitsSold,
-                    'revenue' => $revenue,
-                ];
-            })
-            ->sortByDesc('units_sold')
-            ->first();
+        return $categories->sortByDesc('units_sold')?->first();
     }
 }

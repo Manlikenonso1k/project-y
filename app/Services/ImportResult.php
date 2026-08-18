@@ -10,6 +10,8 @@ class ImportResult
 
     public int $updatedRows = 0;
 
+    public int $skippedRows = 0;
+
     public int $failedRows = 0;
 
     /**

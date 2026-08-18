@@ -19,6 +19,7 @@ class ProductImportTest extends TestCase
     public function test_migration_adds_all_import_columns(): void
     {
         $this->assertTrue(Schema::hasColumns('products', [
+            'item',
             'engine',
             'transmission',
             'gvw',
@@ -213,6 +214,65 @@ class ProductImportTest extends TestCase
         $product = Product::where('slug', '2022-kenworth-t680')->first();
         $this->assertNotNull($product);
         $this->assertSame('2022 Kenworth T680', $product->name);
+    }
+
+    public function test_import_skips_duplicate_items_on_reimport(): void
+    {
+        $path = $this->writeCsv([
+            ['Name', 'Price', 'Category', 'Item'],
+            ['2022 Kenworth T680', '29900', 'Trucks', 'Item:22KN023'],
+            ['2016 Durastar', '74900', 'Trucks', 'Item:16SADUMP'],
+        ]);
+
+        $first = app(ProductImportService::class)->import($path);
+
+        $this->assertSame(2, $first->createdRows);
+        $this->assertSame(0, $first->skippedRows);
+        $this->assertSame(0, $first->failedRows);
+        $this->assertSame('Item:22KN023', Product::where('slug', '2022-kenworth-t680')->first()->item);
+
+        // Re-importing the same file must skip both rows and create nothing new.
+        $second = app(ProductImportService::class)->import($path);
+
+        $this->assertSame(0, $second->createdRows);
+        $this->assertSame(2, $second->skippedRows);
+        $this->assertSame(0, $second->failedRows);
+        $this->assertSame(2, Product::count());
+    }
+
+    public function test_import_updates_duplicate_item_when_skip_disabled(): void
+    {
+        $path = $this->writeCsv([
+            ['Name', 'Price', 'Category', 'Item'],
+            ['2022 Kenworth T680', '29900', 'Trucks', 'Item:22KN023'],
+        ]);
+
+        app(ProductImportService::class)->import($path);
+
+        $updated = app(ProductImportService::class, [
+            'options' => ['skip_existing_by_item' => false],
+        ])->import($path);
+
+        $this->assertSame(0, $updated->createdRows);
+        $this->assertSame(1, $updated->updatedRows);
+        $this->assertSame(0, $updated->skippedRows);
+        $this->assertSame(1, Product::count());
+    }
+
+    public function test_import_skips_duplicate_items_within_the_same_file(): void
+    {
+        $path = $this->writeCsv([
+            ['Name', 'Price', 'Category', 'Item'],
+            ['2022 Kenworth T680', '29900', 'Trucks', 'Item:22KN023'],
+            ['2022 Kenworth T680', '29900', 'Trucks', 'Item:22KN023'],
+        ]);
+
+        $result = app(ProductImportService::class)->import($path);
+
+        $this->assertSame(1, $result->createdRows);
+        $this->assertSame(1, $result->skippedRows);
+        $this->assertSame(0, $result->failedRows);
+        $this->assertSame(1, Product::count());
     }
 
     public function test_import_rejects_unsupported_file_extension(): void

@@ -55,8 +55,12 @@ class ListProducts extends ListRecords
                             ->all())
                         ->searchable()
                         ->preload()
-                        ->placeholder('None — rows without a category will fail')
-                        ->helperText('Used for any row whose Category column is empty.'),
+                        ->placeholder('Trucks — used when Category column is empty')
+                        ->helperText('If left empty, rows without a Category column default to "Trucks".'),
+                    Toggle::make('skip_existing')
+                        ->label('Skip rows already imported (by Item column)')
+                        ->default(false)
+                        ->helperText('When ON, rows whose Item already exists are skipped. When OFF (default) existing rows are updated.'),
                 ])
                 ->action(function (array $data): void {
                     $this->runProductImport($data);
@@ -82,10 +86,16 @@ class ListProducts extends ListRecords
         }
 
         try {
+            $serviceOptions = [
+                'skip_existing_by_item' => (bool) ($data['skip_existing'] ?? false),
+            ];
+
+            if (filled($data['default_category'] ?? null)) {
+                $serviceOptions['default_category'] = $data['default_category'];
+            }
+
             $result = app(ProductImportService::class, [
-                'options' => [
-                    'default_category' => $data['default_category'] ?? null,
-                ],
+                'options' => $serviceOptions,
             ])->import(
                 Storage::disk('local')->path($relativePath),
                 (bool) ($data['has_header'] ?? true),
@@ -103,9 +113,10 @@ class ListProducts extends ListRecords
         }
 
         $summary = sprintf(
-            '%d created, %d updated, %d failed of %d rows.',
+            '%d created, %d updated, %d skipped, %d failed of %d rows.',
             $result->createdRows,
             $result->updatedRows,
+            $result->skippedRows,
             $result->failedRows,
             $result->rowsProcessed,
         );

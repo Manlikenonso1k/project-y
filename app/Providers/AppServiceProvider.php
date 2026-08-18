@@ -49,6 +49,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view): void {
+            static $resolvedCartCount = null;
+
+            if ($resolvedCartCount !== null) {
+                $view->with('cartCount', $resolvedCartCount);
+
+                return;
+            }
+
             $cartCount = 0;
 
             if (Auth::check()) {
@@ -67,7 +75,9 @@ class AppServiceProvider extends ServiceProvider
                 $cartCount = (int) ($cart?->items_sum_quantity ?? 0);
             }
 
-            $view->with('cartCount', $cartCount);
+            $resolvedCartCount = $cartCount;
+
+            $view->with('cartCount', $resolvedCartCount);
         });
     }
 }

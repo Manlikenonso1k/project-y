@@ -27,7 +27,7 @@ function dryRun(ProductImportService $service, string $file): void
 
     try {
         $result = $service->import($file, true);
-        echo basename($file)."  =>  created={$result->createdRows}  updated={$result->updatedRows}  failed={$result->failedRows}  (of {$result->rowsProcessed})\n";
+        echo basename($file)."  =>  created={$result->createdRows}  updated={$result->updatedRows}  skipped={$result->skippedRows}  failed={$result->failedRows}  (of {$result->rowsProcessed})\n";
 
         $sample = Product::query()->latest('id')->limit(3)->get();
 
@@ -53,5 +53,17 @@ dryRun(new ProductImportService, $original);
 echo "-- original file, new default_category='Trucks' --\n";
 dryRun(new ProductImportService(['default_category' => 'Trucks']), $original);
 
-echo "-- fixed file (Category= Trucks pre-filled) --\n";
-dryRun(new ProductImportService, $fixed);
+echo "-- re-import with default_category='Trucks' (skip by Item) --\n";
+
+DB::beginTransaction();
+
+try {
+    $service = new ProductImportService(['default_category' => 'Trucks']);
+    $pass1 = $service->import($original, true);
+    $pass2 = $service->import($original, true);
+
+    echo "  pass 1 => created={$pass1->createdRows} updated={$pass1->updatedRows} skipped={$pass1->skippedRows} failed={$pass1->failedRows}\n";
+    echo "  pass 2 => created={$pass2->createdRows} updated={$pass2->updatedRows} skipped={$pass2->skippedRows} failed={$pass2->failedRows}\n";
+} finally {
+    DB::rollBack();
+}

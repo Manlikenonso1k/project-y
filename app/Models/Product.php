@@ -27,6 +27,7 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'item_number',
         'slug',
         'description',
         'price',
@@ -47,6 +48,12 @@ class Product extends Model
         'youtube_url',
         'extra_description',
         'image_url',
+        'url',
+        'year',
+        'manufacturer',
+        'subcategory',
+        'mileage',
+        'horsepower',
     ];
 
     protected $casts = [
@@ -57,6 +64,9 @@ class Product extends Model
         'is_variable' => 'boolean',
         'views_count' => 'integer',
         'images' => 'array',
+        'year' => 'integer',
+        'mileage' => 'integer',
+        'horsepower' => 'integer',
     ];
 
     public function getGalleryImagePathsAttribute(): array

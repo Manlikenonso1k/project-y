@@ -82,6 +82,8 @@ Order (1) ─────→ (Many) OrderItem
 User::with('orders')->with('carts')
 Order::with('items')->with('user')
 Product::with('category')->with('cartItems')->with('orderItems')
+    ->with('itemNumber')->with('year')->with('manufacturer')->with('subcategory')
+    ->with('mileage')->with('horsepower')
 Cart::with('items')->with('user')
 ```
 
@@ -162,7 +164,33 @@ CheckoutController::process()
     User sees order number, items, total
 ```
 
-## Session Management
+### Product Import
+
+```
+CSV/Excel Import → Filament Admin → Products → Import Products
+    ↓
+User uploads file (CSV, XLSX, XLS) with headers:
+    Name, Price, Quantity, Category, Engine, Transmission, GVW, Store,
+    ECM Miles, YouTube URL, Extra Description, Image URL, URL, Description, Td, Item, Td 2
+    ↓
+ProductImportService reads file (league/csv + openspout)
+    ├─ Maps headers to product fields
+    ├─ Strips 'Item:' prefix from Item column → item_number (primary key)
+    ├─ Auto-extracts year (first 4-digit number from Name)
+    ├─ Auto-extracts manufacturer (words between year and model in Name)
+    ├─ Auto-extracts subcategory (everything after ':' in Name)
+    ├─ Auto-extracts mileage (first integer from ECM Miles, ignoring '(Hours)' )
+    ├─ Auto-extracts horsepower (finds pattern like '405HP' in Engine)
+    ├─ Auto-sets Category = 'Trucks' if Category column is empty
+    ├─ Creates or updates product by item_number (skip if already imported)
+    └─ Reports: created / updated / skipped / failed counts
+        ↓
+    Blade renders page with success/flash messages
+        ↓
+    Browser displays (NO JavaScript NEEDED!)
+```
+
+### Session Management
 
 ### How Shopping Cart Works
 

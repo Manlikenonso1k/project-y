@@ -13,60 +13,101 @@
         <div class="col-lg-3 mb-4">
             <h5 class="mb-4">Filter Products</h5>
 
-            <form method="GET" action="{{ isset($category) ? route('category.show', $category->slug) : route('shop.index') }}" class="mb-4">
-                <div class="mb-4">
-                    <h6>Categories</h6>
-                    @forelse($categories ?? [] as $cat)
-                        <a href="{{ route('category.show', $cat->slug) }}" class="d-flex justify-content-between text-decoration-none mb-2">
-                            <span>{{ $cat->name }}</span>
-                            <span class="text-muted">{{ $cat->products->count() }}</span>
-                        </a>
-                    @empty
-                        <p class="text-muted">No categories</p>
-                    @endforelse
-                </div>
-
-                <div class="mb-4">
-                    <h6 class="mb-3">Price Range</h6>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <label for="price-min" class="form-label small mb-1">Min</label>
-                            <input
-                                id="price-min"
-                                type="number"
-                                name="price_min"
-                                class="form-control form-control-sm"
-                                placeholder="0"
-                                min="0"
-                                step="0.01"
-                                value="{{ request('price_min') }}"
-                            >
-                        </div>
-                        <div class="col-6">
-                            <label for="price-max" class="form-label small mb-1">Max</label>
-                            <input
-                                id="price-max"
-                                type="number"
-                                name="price_max"
-                                class="form-control form-control-sm"
-                                placeholder="999"
-                                min="0"
-                                step="0.01"
-                                value="{{ request('price_max') }}"
-                            >
-                        </div>
+            <!-- Subcategory Filter -->
+            <div class="mb-4">
+                <h6 class="mb-3">Subcategory</h6>
+                @php
+                    $allSubcategories = array_keys($productCountBySubcategory ?? []);
+                @endphp
+                @forelse ($allSubcategories as $subcat)
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="subcategory[]" value="{{ $subcat }}" id="subcat-{{ $loop->index }}">
+                        <label class="form-check-label small" for="subcat-{{ $loop->index }}">
+                            ☐ {{ $subcat }}
+                            <span class="text-muted">({{ (int) ($productCountBySubcategory[$subcat] ?? 0) }})</span>
+                        </label>
                     </div>
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1">Apply</button>
-                        <a href="{{ isset($category) ? route('category.show', $category->slug) : route('shop.index') }}" class="btn btn-outline-primary btn-sm">Reset</a>
-                    </div>
-                </div>
+                @empty
+                    <p class="text-muted small">No subcategories</p>
+                @endforelse
+            </div>
 
-                @if(request()->filled('search') || request()->filled('sort'))
-                    <input type="hidden" name="search" value="{{ request('search') }}">
-                    <input type="hidden" name="sort" value="{{ request('sort') }}">
-                @endif
-            </form>
+            <!-- Year Filter -->
+            <div class="mb-4">
+                <h6 class="mb-3">Year</h6>
+                @php
+                    $allYears = array_keys($productCountByYear ?? []);
+                    sort($allYears);
+                @endphp
+                @forelse ($allYears as $year)
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="year[]" value="{{ $year }}" id="year-{{ $year }}">
+                        <label class="form-check-label small" for="year-{{ $year }}">
+                            ☐ {{ $year }}
+                            <span class="text-muted">({{ (int) ($productCountByYear[$year] ?? 0) }})</span>
+                        </label>
+                    </div>
+                @empty
+                    <p class="text-muted small">No years</p>
+                @endforelse
+            </div>
+
+            <!-- Mileage Filter -->
+            <div class="mb-4">
+                <h6 class="mb-3">Mileage</h6>
+                @php
+                $mileageRanges = [
+                    'na' => 'N/A',
+                    '0-99999' => '0–99,999',
+                    '100000-199999' => '100,000–199,999',
+                    '200000-299999' => '200,000–299,999',
+                    '300000-399999' => '300,000–399,999',
+                    '400000-499999' => '400,000–499,999',
+                    '500000-599999' => '500,000–599,999',
+                    '600000-699999' => '600,000–699,999',
+                    '700000-799999' => '700,000–799,999',
+                    '800000-899999' => '800,000–899,999',
+                    '900000-999999' => '900,000–999,999',
+                ];
+                @endphp
+                @foreach ($mileageRanges as $key => $label)
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="mileage" value="{{ $key }}" id="mileage-{{ $key }}">
+                    <label class="form-check-label small" for="mileage-{{ $key }}">
+                        ☐ {{ $label }} <span class="text-muted">({{ (int) ($productCountByMileage[$key] ?? 0) }})</span>
+                    </label>
+                </div>
+                @endforeach
+            </div>
+
+            <!-- Horsepower Filter -->
+            <div class="mb-4">
+                <h6 class="mb-3">Horsepower</h6>
+                @php
+                $hpRanges = [
+                    'na' => 'N/A',
+                    '250-299' => '250–299',
+                    '300-349' => '300–349',
+                    '350-399' => '350–399',
+                    '400-449' => '400–449',
+                    '450-499' => '450–499',
+                    '500+' => '500+',
+                ];
+                @endphp
+                @foreach ($hpRanges as $key => $label)
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="horsepower" value="{{ $key }}" id="horsepower-{{ $key }}">
+                    <label class="form-check-label small" for="horsepower-{{ $key }}">
+                        ☐ {{ $label }} <span class="text-muted">({{ (int) ($productCountByHorsepower[$key] ?? 0) }})</span>
+                    </label>
+                </div>
+                @endforeach
+            </div>
+
+            <!-- Clear All Button -->
+            <div class="d-grid gap-2 mt-4">
+                <a href="{{ route('shop.index') }}" class="btn btn-outline-primary btn-sm">Clear All Filters</a>
+            </div>
         </div>
 
         <!-- Products Grid -->

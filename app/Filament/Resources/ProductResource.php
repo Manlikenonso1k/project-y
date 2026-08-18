@@ -17,6 +17,8 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class ProductResource extends Resource
 {
@@ -36,6 +38,40 @@ class ProductResource extends Resource
                     ->required()
                     ->unique('products', 'slug', ignoreRecord: true)
                     ->maxLength(255),
+
+                Forms\Components\TextInput::make('item_number')
+                    ->label('Item / Stock #')
+                    ->maxLength(255)
+                    ->helperText('Unique identifier from the import file. Used to skip already-imported rows.'),
+
+                Section::make('Specs (auto-extracted from import)')
+                    ->schema([
+                        Forms\Components\TextInput::make('year')
+                            ->numeric()
+                            ->nullable(),
+
+                        Forms\Components\TextInput::make('manufacturer')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('subcategory')
+                            ->maxLength(255),
+
+                        Forms\Components\TextInput::make('mileage')
+                            ->numeric()
+                            ->nullable()
+                            ->suffix('mi'),
+
+                        Forms\Components\TextInput::make('horsepower')
+                            ->numeric()
+                            ->nullable()
+                            ->suffix('HP'),
+
+                        Forms\Components\TextInput::make('url')
+                            ->url()
+                            ->maxLength(255)
+                            ->helperText('Link to the original listing / source.'),
+                    ])
+                    ->columns(3),
 
                 Forms\Components\Textarea::make('description')
                     ->required()
@@ -232,8 +268,31 @@ class ProductResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('item_number')
+                    ->label('Item')
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('year')
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('manufacturer')
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('mileage')
+                    ->formatStateUsing(fn ($state): ?string => $state === null ? null : number_format((int) $state))
+                    ->sortable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('horsepower')
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('category.name')
                     ->sortable(),
+
 
                 Tables\Columns\TextColumn::make('price')
                     ->formatStateUsing(fn ($state): string => '$'.number_format((float) $state, 2))
@@ -268,6 +327,76 @@ class ProductResource extends Resource
                     ->relationship('category', 'name'),
 
                 Tables\Filters\TernaryFilter::make('is_active'),
+
+                Tables\Filters\SelectFilter::make('year')
+                    ->label('Year')
+                    ->multiple()
+                    ->options(fn (): array => Product::query()
+                        ->whereNotNull('year')
+                        ->selectRaw('year, count(*) as total')
+                        ->groupBy('year')
+                        ->orderByDesc('year')
+                        ->get()
+                        ->mapWithKeys(fn ($row): array => [$row->year => $row->year.' ('.$row->total.')'])
+                        ->all())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['values'] ?? null)
+                        ? $query->whereIn('year', $data['values'])
+                        : $query),
+
+                Tables\Filters\SelectFilter::make('manufacturer')
+                    ->label('Manufacturer')
+                    ->multiple()
+                    ->options(fn (): array => Product::query()
+                        ->whereNotNull('manufacturer')
+                        ->selectRaw('manufacturer, count(*) as total')
+                        ->groupBy('manufacturer')
+                        ->orderBy('manufacturer')
+                        ->get()
+                        ->mapWithKeys(fn ($row): array => [$row->manufacturer => $row->manufacturer.' ('.$row->total.')'])
+                        ->all())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['values'] ?? null)
+                        ? $query->whereIn('manufacturer', $data['values'])
+                        : $query),
+
+                Tables\Filters\SelectFilter::make('mileage')
+                    ->label('Mileage')
+                    ->multiple()
+                    ->options(static::mileageFilterOptions())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['values'] ?? null)
+                        ? $query->where(function (Builder $subQuery) use ($data): void {
+                            foreach ($data['values'] as $value) {
+                                $subQuery->orWhere(function (Builder $rangeQuery) use ($value): void {
+                                    if ($value === 'na') {
+                                        $rangeQuery->whereNull('mileage');
+
+                                        return;
+                                    }
+
+                                    $rangeQuery->whereBetween('mileage', explode('-', $value));
+                                });
+                            }
+                        })
+                        : $query),
+
+                Tables\Filters\SelectFilter::make('horsepower')
+                    ->label('Horsepower')
+                    ->multiple()
+                    ->options(static::horsepowerFilterOptions())
+                    ->query(fn (Builder $query, array $data): Builder => filled($data['values'] ?? null)
+                        ? $query->where(function (Builder $subQuery) use ($data): void {
+                            foreach ($data['values'] as $value) {
+                                $subQuery->orWhere(function (Builder $rangeQuery) use ($value): void {
+                                    if ($value === 'na') {
+                                        $rangeQuery->whereNull('horsepower');
+
+                                        return;
+                                    }
+
+                                    $rangeQuery->whereBetween('horsepower', explode('-', $value));
+                                });
+                            }
+                        })
+                        : $query),
             ])
             ->actions([
                 EditAction::make(),
@@ -292,5 +421,85 @@ class ProductResource extends Resource
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * @return array<string, string> mileage range key => label (with count)
+     */
+    protected static function mileageFilterOptions(): array
+    {
+        $ranges = [
+            'na' => 'N/A',
+            '0-99999' => '0–99,999',
+            '100000-199999' => '100,000–199,999',
+            '200000-299999' => '200,000–299,999',
+            '300000-399999' => '300,000–399,999',
+            '400000-499999' => '400,000–499,999',
+            '500000-599999' => '500,000–599,999',
+            '600000-699999' => '600,000–699,999',
+            '700000-799999' => '700,000–799,999',
+            '800000-899999' => '800,000–899,999',
+            '900000-999999' => '900,000–999,999',
+        ];
+
+        $counts = Cache::remember('product-filter-mileage-aggregates', 120, fn () => Product::query()
+            ->selectRaw('SUM(CASE WHEN mileage IS NULL THEN 1 ELSE 0 END) as na')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 0 AND 99999 THEN 1 ELSE 0 END) as range_0_99999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 100000 AND 199999 THEN 1 ELSE 0 END) as range_100000_199999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 200000 AND 299999 THEN 1 ELSE 0 END) as range_200000_299999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 300000 AND 399999 THEN 1 ELSE 0 END) as range_300000_399999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 400000 AND 499999 THEN 1 ELSE 0 END) as range_400000_499999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 500000 AND 599999 THEN 1 ELSE 0 END) as range_500000_599999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 600000 AND 699999 THEN 1 ELSE 0 END) as range_600000_699999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 700000 AND 799999 THEN 1 ELSE 0 END) as range_700000_799999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 800000 AND 899999 THEN 1 ELSE 0 END) as range_800000_899999')
+            ->selectRaw('SUM(CASE WHEN mileage BETWEEN 900000 AND 999999 THEN 1 ELSE 0 END) as range_900000_999999')
+            ->first());
+
+        $options = [];
+
+        foreach ($ranges as $key => $label) {
+            $column = $key === 'na' ? 'na' : 'range_'.str_replace('-', '_', $key);
+            $count = (int) ($counts?->{$column} ?? 0);
+            $options[$key] = $label.' ('.$count.')';
+        }
+
+        return $options;
+    }
+
+    /**
+     * @return array<string, string> horsepower range key => label (with count)
+     */
+    protected static function horsepowerFilterOptions(): array
+    {
+        $ranges = [
+            'na' => 'N/A',
+            '250-299' => '250–299',
+            '300-349' => '300–349',
+            '350-399' => '350–399',
+            '400-449' => '400–449',
+            '450-499' => '450–499',
+            '500-999' => '500+',
+        ];
+
+        $counts = Cache::remember('product-filter-horsepower-aggregates', 120, fn () => Product::query()
+            ->selectRaw('SUM(CASE WHEN horsepower IS NULL THEN 1 ELSE 0 END) as na')
+            ->selectRaw('SUM(CASE WHEN horsepower BETWEEN 250 AND 299 THEN 1 ELSE 0 END) as range_250_299')
+            ->selectRaw('SUM(CASE WHEN horsepower BETWEEN 300 AND 349 THEN 1 ELSE 0 END) as range_300_349')
+            ->selectRaw('SUM(CASE WHEN horsepower BETWEEN 350 AND 399 THEN 1 ELSE 0 END) as range_350_399')
+            ->selectRaw('SUM(CASE WHEN horsepower BETWEEN 400 AND 449 THEN 1 ELSE 0 END) as range_400_449')
+            ->selectRaw('SUM(CASE WHEN horsepower BETWEEN 450 AND 499 THEN 1 ELSE 0 END) as range_450_499')
+            ->selectRaw('SUM(CASE WHEN horsepower >= 500 THEN 1 ELSE 0 END) as range_500_999')
+            ->first());
+
+        $options = [];
+
+        foreach ($ranges as $key => $label) {
+            $column = $key === 'na' ? 'na' : 'range_'.str_replace('-', '_', $key);
+            $count = (int) ($counts?->{$column} ?? 0);
+            $options[$key] = $label.' ('.$count.')';
+        }
+
+        return $options;
     }
 }

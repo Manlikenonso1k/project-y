@@ -24,6 +24,8 @@ class ProductImportService
      */
     protected const COLUMN_ALIASES = [
         'name' => ['name', 'product', 'product_name', 'title'],
+        'item_number' => ['item', 'item_number', 'item_id', 'stock_number', 'lot', 'lot_id', 'sku'],
+        'url' => ['url', 'source_url', 'listing_url', 'external_url', 'link', 'product_url'],
         'slug' => ['slug', 'url_key'],
         'description' => ['description', 'desc', 'short_description', 'details'],
         'price' => ['price', 'unit_price', 'selling_price', 'sale_price'],
@@ -70,6 +72,39 @@ class ProductImportService
         'youtube_url',
         'extra_description',
         'image_url',
+        'item_number',
+        'url',
+    ];
+
+    /**
+     * Known truck manufacturers, longest name first, used to split the
+     * "YEAR MANUFACTURER MODEL Truck: Subcategory" product names.
+     *
+     * @var array<int, string>
+     */
+    protected const MANUFACTURERS = [
+        'blue bird',
+        'mitsubishi fuso',
+        'western star',
+        'new holland',
+        'international',
+        'freightliner',
+        'kenworth',
+        'peterbilt',
+        'caterpillar',
+        'chevrolet',
+        'sterling',
+        'volvo',
+        'isuzu',
+        'hino',
+        'dodge',
+        'ottawa',
+        'mack',
+        'gmc',
+        'ford',
+        'case',
+        'oshkosh',
+        'autocar',
     ];
 
     /**
@@ -90,14 +125,17 @@ class ProductImportService
     protected array $unknownColumns = [];
 
     /**
-     * @param  array{create_missing_categories?: bool, update_existing?: bool, default_category?: string|null}  $options
+     * @param  array{create_missing_categories?: bool, update_existing?: bool, default_category?: string|null, skip_existing_by_item?: bool}  $options
      */
     public function __construct(array $options = [])
     {
+        usort($manufacturers = static::MANUFACTURERS, fn (string $a, string $b): int => strlen($b) <=> strlen($a));
+
         $this->options = array_merge([
             'create_missing_categories' => true,
             'update_existing' => true,
-            'default_category' => null,
+            'default_category' => 'Trucks',
+            'skip_existing_by_item' => false,
         ], $options);
 
         foreach (static::COLUMN_ALIASES as $field => $aliases) {
@@ -286,6 +324,20 @@ class ProductImportService
     {
         $result->rowsProcessed++;
 
+        $item = $this->normalizeItemNumber($mapped['item_number'] ?? null);
+
+        // The Item column acts as the primary key. Look the product up by it;
+        // update if found, otherwise create (unless skipping is enabled).
+        $product = filled($item)
+            ? Product::query()->where('item_number', $item)->first()
+            : null;
+
+        if ($product && $this->options['skip_existing_by_item']) {
+            $result->skippedRows++;
+
+            return;
+        }
+
         $errors = [];
 
         $name = trim((string) ($mapped['name'] ?? ''));
@@ -316,9 +368,8 @@ class ProductImportService
             return;
         }
 
-        $product = null;
-
-        if ($this->options['update_existing']) {
+        // No existing row matched by item yet — fall back to name/slug matching.
+        if (! $product && $this->options['update_existing']) {
             $product ??= Product::query()->where('name', $name)->first();
 
             $slugHint = trim((string) ($mapped['slug'] ?? ''));
@@ -341,6 +392,7 @@ class ProductImportService
 
         $attributes = [
             'name' => $name,
+            'item_number' => $item,
             'slug' => $slug,
             'description' => trim((string) ($mapped['description'] ?? $product->description ?? '')),
             'price' => $isVariable ? 0 : (float) $price,
@@ -358,6 +410,13 @@ class ProductImportService
             'youtube_url' => $this->nullableString($mapped['youtube_url'] ?? null, $product->youtube_url),
             'extra_description' => $this->nullableString($mapped['extra_description'] ?? null, $product->extra_description),
             'image_url' => $this->nullableString($mapped['image_url'] ?? null, $product->image_url),
+            'url' => $this->normalizeUrl($mapped['url'] ?? null),
+            // Auto-extracted metadata
+            'year' => $this->extractYear($name),
+            'manufacturer' => $this->extractManufacturer($name),
+            'subcategory' => $this->extractSubcategory($name),
+            'mileage' => $this->extractMileage($mapped['ecm_miles'] ?? null),
+            'horsepower' => $this->extractHorsepower($mapped['engine'] ?? null),
         ];
 
         $image = trim((string) ($mapped['image'] ?? $product->image ?? ''));
@@ -537,5 +596,112 @@ class ProductImportService
         ), filled(...)));
 
         return $parts ?: null;
+    }
+
+    protected function normalizeItemNumber(mixed $value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        $value = preg_replace('/^item\s*:\s*/i', '', $value) ?? $value;
+
+        return $value === '' ? null : $value;
+    }
+
+    protected function normalizeUrl(mixed $value): ?string
+    {
+        $value = $this->nullableString($value);
+
+        if (! $value) {
+            return null;
+        }
+
+        if (! str_starts_with($value, 'http://') && ! str_starts_with($value, 'https://')) {
+            return null;
+        }
+
+        return $value;
+    }
+
+    protected function extractYear(string $name): ?int
+    {
+        if (! preg_match_all('/\b(\d{4})\b/', $name, $matches)) {
+            return null;
+        }
+
+        foreach ($matches[1] as $candidate) {
+            $candidate = (int) $candidate;
+
+            if ($candidate >= 1999 && $candidate <= 2024) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractManufacturer(string $name): ?string
+    {
+        $head = Str::before($name, ':');
+        $head = trim(preg_replace('/^\s*\d{4}\s*/', '', $head) ?? $head);
+        $head = trim(preg_replace('/\s+truck$/i', '', $head) ?? $head);
+
+        $candidate = mb_strtolower($head, 'UTF-8');
+
+        foreach (static::MANUFACTURERS as $manufacturer) {
+            if (! str_starts_with($candidate, $manufacturer)) {
+                continue;
+            }
+
+            $rest = substr($head, strlen($manufacturer));
+
+            // Only accept when followed by a word boundary (space or end).
+            if ($rest === '' || str_starts_with($rest, ' ')) {
+                return Str::title($manufacturer);
+            }
+        }
+
+        $firstWord = trim(strtok($head, ' '));
+
+        return $firstWord === '' ? null : Str::title($firstWord);
+    }
+
+    protected function extractSubcategory(string $name): ?string
+    {
+        if (! str_contains($name, ':')) {
+            return null;
+        }
+
+        $subcategory = trim(Str::after($name, ':'));
+
+        return $subcategory === '' ? null : $subcategory;
+    }
+
+    protected function extractMileage(mixed $value): ?int
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        if (! preg_match('/(\d[\d,]*)/', (string) $value, $matches)) {
+            return null;
+        }
+
+        return (int) str_replace(',', '', $matches[1]);
+    }
+
+    protected function extractHorsepower(mixed $value): ?int
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        if (! preg_match('/(\d{3})\s*hp/i', (string) $value, $matches)) {
+            return null;
+        }
+
+        return (int) $matches[1];
     }
 }

@@ -135,15 +135,130 @@
                 </div>
             @endif
 
+            <!-- Product Specs -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h6>Year</h6>
+                    @if($product->year)
+                        {{ $product->year }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Manufacturer</h6>
+                    @if($product->manufacturer)
+                        {{ $product->manufacturer }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Horsepower</h6>
+                    @if($product->horsepower)
+                        {{ $product->horsepower }} HP
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h6>Subcategory</h6>
+                    @if($product->subcategory)
+                        {{ $product->subcategory }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Mileage</h6>
+                    @if($product->mileage)
+                        {{ number_format($product->mileage) }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>GVW</h6>
+                    @if($product->gvw)
+                        {{ $product->gvw }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h6>Store</h6>
+                    @if($product->store)
+                        {{ $product->store }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Engine</h6>
+                    @if($product->engine)
+                        {{ $product->engine }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+                <div class="col-md-4">
+                    <h6>Transmission</h6>
+                    @if($product->transmission)
+                        {{ $product->transmission }}
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6>Extra Description</h6>
+                    @if($product->extra_description)
+                        <p class="mb-0">{{ $product->extra_description }}</p>
+                    @else
+                        <span class="text-muted">N/A</span>
+                    @endif
+                </div>
+            </div>
+
+            @if($product->url)
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6>Original Listing</h6>
+                    <a href="{{ $product->url }}" target="_blank" rel="noopener" class="text-decoration-none">
+                        View original listing
+                    </a>
+                </div>
+            </div>
+            @endif
+
+            @if($product->youtube_url)
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6>Video</h6>
+                    <div class="ratio ratio-16x9">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ parse_url($product->youtube_url, PHP_URL_QUERY) }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Product Info -->
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6">
                     <h6>Category</h6>
                     <a href="{{ route('category.show', $product->category->slug) }}" class="text-decoration-none">
                         {{ $product->category->name }}
                     </a>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6">
                     <h6>Availability</h6>
                     @if($product->quantity > 0)
                         <span class="badge bg-success">In Stock</span>
