@@ -129,7 +129,8 @@ class ProductImportService
      */
     public function __construct(array $options = [])
     {
-        usort($manufacturers = static::MANUFACTURERS, fn (string $a, string $b): int => strlen($b) <=> strlen($a));
+        $manufacturers = static::MANUFACTURERS;
+        usort($manufacturers, fn (string $a, string $b): int => strlen($b) <=> strlen($a));
 
         $this->options = array_merge([
             'create_missing_categories' => true,
@@ -427,12 +428,18 @@ class ProductImportService
         }
 
         $product->fill($attributes);
+
+        // Check if there are any actual changes before saving
+        $isDirty = $product->isDirty();
+
         $product->save();
 
         if ($isNew) {
             $result->createdRows++;
-        } else {
+        } elseif ($isDirty) {
             $result->updatedRows++;
+        } else {
+            $result->skippedRows++;
         }
     }
 
