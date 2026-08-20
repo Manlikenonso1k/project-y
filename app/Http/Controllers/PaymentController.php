@@ -41,7 +41,15 @@ class PaymentController extends Controller
 
         try {
             if (! $order->btc_address) {
-                $callbackUrl = URL::route('api.blockonomics.callback');
+                $callbackSecret = (string) config('services.blockonomics.callback_secret');
+
+                if ($callbackSecret === '') {
+                    throw new \RuntimeException('Missing Blockonomics callback secret. Set BLOCKONOMICS_CALLBACK_SECRET in your environment.');
+                }
+
+                $callbackUrl = URL::route('api.blockonomics.callback', [
+                    'secret' => $callbackSecret,
+                ]);
                 $address = $this->blockonomicsService->createAddress($callbackUrl);
                 $expectedBtc = $this->blockonomicsService->convertUsdToBtc((float) $order->total);
 

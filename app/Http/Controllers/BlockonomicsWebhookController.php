@@ -19,6 +19,7 @@ class BlockonomicsWebhookController extends Controller
             'status' => ['required', 'integer'],
             'value' => ['nullable', 'integer', 'min:0'],
             'txid' => ['nullable', 'string', 'max:255'],
+            'crypto' => ['nullable', 'string', 'max:16'],
         ]);
 
         $order = Order::query()->where('btc_address', $payload['addr'])->first();
@@ -31,6 +32,15 @@ class BlockonomicsWebhookController extends Controller
 
             return response()->json(['ok' => true], 202);
         }
+
+        Log::info('Blockonomics callback received.', [
+            'order_id' => $order->id,
+            'address' => $payload['addr'],
+            'status' => $payload['status'],
+            'value' => $payload['value'] ?? null,
+            'txid' => $payload['txid'] ?? null,
+            'crypto' => $payload['crypto'] ?? 'BTC',
+        ]);
 
         $payloadHash = hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
@@ -63,11 +73,9 @@ class BlockonomicsWebhookController extends Controller
                 $order->txid = $payload['txid'];
             }
 
-            if ($statusCode === 0) {
-                $order->payment_status = 'pending_confirmation';
-            }
-
-            if ($statusCode === 1) {
+            if ($statusCode < 0) {
+                $order->payment_status = 'failed';
+            } elseif ($statusCode >= 2) {
                 if ($paidSatoshi < $expectedSatoshi) {
                     $order->payment_status = 'underpaid';
                 } else {
@@ -77,10 +85,8 @@ class BlockonomicsWebhookController extends Controller
                         $order->status = 'processing';
                     }
                 }
-            }
-
-            if ($statusCode < 0) {
-                $order->payment_status = 'failed';
+            } else {
+                $order->payment_status = 'pending_confirmation';
             }
 
             $order->save();

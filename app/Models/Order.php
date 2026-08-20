@@ -49,4 +49,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function blockonomicsCallbacks(): HasMany
+    {
+        return $this->hasMany(BlockonomicsCallback::class);
+    }
 }
