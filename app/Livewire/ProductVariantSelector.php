@@ -10,7 +10,6 @@ class ProductVariantSelector extends Component
     public Product $product;
     public $selectedVariant = null;
     public $selectedPrice = null;
-    public $selectedStock = null;
     public $selectedOriginalPrice = null;
 
     public function mount(Product $product)
@@ -20,11 +19,9 @@ class ProductVariantSelector extends Component
             $variant = $product->variants->first();
             $this->selectedVariant = $variant->id;
             $this->selectedPrice = $variant->price;
-            $this->selectedStock = $variant->stock;
             $this->selectedOriginalPrice = $product->original_price;
         } else {
             $this->selectedPrice = $product->price;
-            $this->selectedStock = $product->quantity;
             $this->selectedOriginalPrice = $product->original_price;
         }
 
@@ -37,7 +34,6 @@ class ProductVariantSelector extends Component
         if ($variant) {
             $this->selectedVariant = $variantId;
             $this->selectedPrice = $variant->price;
-            $this->selectedStock = $variant->stock;
             $this->selectedOriginalPrice = $this->product->original_price;
             $this->dispatchPricingUpdate();
         }
@@ -47,7 +43,6 @@ class ProductVariantSelector extends Component
     {
         $this->dispatch('product-pricing-updated',
             price: $this->selectedPrice,
-            stock: $this->selectedStock,
             originalPrice: $this->selectedOriginalPrice,
             variantId: $this->selectedVariant,
         );

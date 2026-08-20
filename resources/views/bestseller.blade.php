@@ -46,7 +46,7 @@
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <div class="input-group input-group-sm">
-                                <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{ $product->quantity }}">
+                                <input type="number" name="quantity" class="form-control" value="1" min="1">
                                 <button class="btn btn-primary" type="submit">Add to Cart</button>
                             </div>
                         </form>

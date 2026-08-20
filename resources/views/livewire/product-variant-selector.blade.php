@@ -7,11 +7,6 @@
                 @foreach ($product->variants as $variant)
                     <option value="{{ $variant->id }}" @selected($selectedVariant == $variant->id)>
                         {{ $variant->weight }}{{ $variant->unit }} - ${{ number_format($variant->price, 2) }}
-                        @if ($variant->stock > 0)
-                            ({{ $variant->stock }} in stock)
-                        @else
-                            (Out of stock)
-                        @endif
                     </option>
                 @endforeach
             </select>
@@ -26,7 +21,6 @@
                     Original: <span class="text-decoration-line-through">${{ number_format($selectedOriginalPrice, 2) }}</span>
                 </div>
             @endif
-            <div class="badge bg-info mt-2">{{ $selectedStock }} in stock</div>
         </div>
     @else
         <div class="price-display mb-3">
@@ -38,7 +32,6 @@
                     Original: <span class="text-decoration-line-through">${{ number_format($selectedOriginalPrice, 2) }}</span>
                 </div>
             @endif
-            <div class="badge bg-info mt-2">{{ $selectedStock }} in stock</div>
         </div>
     @endif
 </div>

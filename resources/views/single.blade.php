@@ -15,9 +15,6 @@
         ? $product->variants->first()->price
         : $product->price;
     $initialOriginalPrice = $product->original_price;
-    $initialStock = $product->is_variable && $product->variants->count() > 0
-        ? $product->variants->first()->stock
-        : $product->quantity;
     $initialDiscount = $initialOriginalPrice && $initialOriginalPrice > $initialPrice
         ? $initialOriginalPrice - $initialPrice
         : null;
@@ -71,8 +68,7 @@
 
             <div class="d-flex align-items-center gap-3 mb-4 flex-wrap" id="product-pricing-block"
                  data-price="{{ $initialPrice }}"
-                 data-original-price="{{ $initialOriginalPrice ?? '' }}"
-                 data-stock="{{ $initialStock }}">
+                 data-original-price="{{ $initialOriginalPrice ?? '' }}">
                 <span class="h3 text-primary mb-0" id="product-price">${{ number_format($initialPrice, 2) }}</span>
                 <span class="h5 text-decoration-line-through text-muted mb-0 {{ $initialOriginalPrice && $initialOriginalPrice > $initialPrice ? '' : 'd-none' }}" id="product-original-price">
                     @if($initialOriginalPrice && $initialOriginalPrice > $initialPrice)
@@ -84,7 +80,6 @@
                         Save {{ $initialDiscountPercent }}% (${{ number_format($initialDiscount, 2) }})
                     @endif
                 </span>
-                <span class="badge bg-info" id="product-stock">{{ $initialStock }} in stock</span>
             </div>
 
             <p class="mb-4">{{ $product->description }}</p>
@@ -104,18 +99,12 @@
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4">
                         <label for="quantity" class="form-label">Quantity:</label>
-                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="{{ $product->quantity }}" required>
+                        <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" required>
                     </div>
                     <div class="col-md-8">
-                        @if($product->quantity > 0)
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                            </button>
-                        @else
-                            <button type="button" class="btn btn-secondary btn-lg w-100" disabled>
-                                Out of Stock
-                            </button>
-                        @endif
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                        </button>
                     </div>
                 </div>
             </form>
@@ -258,14 +247,6 @@
                         {{ $product->category->name }}
                     </a>
                 </div>
-                <div class="col-md-6">
-                    <h6>Availability</h6>
-                    @if($product->quantity > 0)
-                        <span class="badge bg-success">In Stock</span>
-                    @else
-                        <span class="badge bg-danger">Out of Stock</span>
-                    @endif
-                </div>
             </div>
         </div>
     </div>
@@ -288,7 +269,6 @@
                             <h5 class="card-title">{{ $related->name }}</h5>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="h5 mb-0 text-primary">${{ number_format($related->price, 2) }}</span>
-                                <small class="badge bg-info">{{ $related->quantity }} left</small>
                             </div>
                         </div>
                         <div class="card-footer bg-white">
@@ -315,7 +295,6 @@
                 const priceEl = document.getElementById('product-price');
                 const originalPriceEl = document.getElementById('product-original-price');
                 const discountBadgeEl = document.getElementById('product-discount-badge');
-                const stockEl = document.getElementById('product-stock');
                 const pricingBlock = document.getElementById('product-pricing-block');
 
                 function updatePricingDisplay(detail) {
@@ -327,19 +306,13 @@
                     const originalPrice = detail.originalPrice !== null && detail.originalPrice !== undefined && detail.originalPrice !== ''
                         ? Number(detail.originalPrice)
                         : null;
-                    const stock = detail.stock ?? 0;
 
                     if (priceEl) {
                         priceEl.textContent = `$${price.toFixed(2)}`;
                     }
 
-                    if (stockEl) {
-                        stockEl.textContent = `${stock} in stock`;
-                    }
-
                     if (pricingBlock) {
                         pricingBlock.dataset.price = price;
-                        pricingBlock.dataset.stock = stock;
                     }
 
                     if (originalPriceEl && originalPrice !== null && originalPrice > price) {
