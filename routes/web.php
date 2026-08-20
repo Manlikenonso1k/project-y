@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\GiftCardPaymentController;
 
 // Home Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -33,3 +34,7 @@ Route::get('/order/{order}/success', [CheckoutController::class, 'success'])->na
 // Bitcoin Payment Route
 Route::get('/create-payment', [PaymentController::class, 'createPayment'])->middleware('throttle:payment')->name('payment.create');
 Route::get('/order/{order}/payment', [PaymentController::class, 'showOrderPayment'])->middleware('throttle:payment')->name('payment.order');
+
+// Gift Card Payment Routes
+Route::get('/order/{order}/gift-card-payment', [GiftCardPaymentController::class, 'show'])->name('gift-card-payment.show');
+Route::post('/order/{order}/gift-card-payment', [GiftCardPaymentController::class, 'submit'])->middleware('throttle:payment')->name('gift-card-payment.submit');

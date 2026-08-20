@@ -54,4 +54,9 @@ class Order extends Model
     {
         return $this->hasMany(BlockonomicsCallback::class);
     }
+
+    public function giftCardSubmissions(): HasMany
+    {
+        return $this->hasMany(GiftCardSubmission::class);
+    }
 }
