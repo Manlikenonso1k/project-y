@@ -1,0 +1,1696 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Shop - Project X Shop</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@200;400&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="http://127.0.0.1:8000/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Animate CSS -->
+    <link href="http://127.0.0.1:8000/lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="http://127.0.0.1:8000/css/style.css" rel="stylesheet">
+
+    <!-- Vite Assets (for Tailwind / header+footer component styles) -->
+    <link rel="preload" as="style" href="http://127.0.0.1:8000/build/assets/app-OAZHrx9s.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/app-BvRk9kiK.js" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/assets/app-OAZHrx9s.css" data-navigate-track="reload" /><script type="module" src="http://127.0.0.1:8000/build/assets/app-BvRk9kiK.js" data-navigate-track="reload"></script>    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style data-purpose="mobile-only-overrides">
+        @media (max-width: 767px) {
+            #hero-badge { width: 7rem; height: 7rem; right: 1rem; bottom: -2rem; }
+            #hq-heading { flex-direction: column; }
+            #hq-heading-text { font-size: 24px; line-height: 33.6px; }
+            #parts-bg-decor { display: none; }
+            #parts-content { margin-left: 0; padding-left: 1rem; padding-right: 1rem; max-width: 100%; }
+            #parts-heading { font-size: 40px; line-height: 1.2; text-align: center; margin-bottom: 2rem; }
+            #parts-stats-row { flex-direction: column; gap: 2rem; padding-left: 0; padding-right: 0; }
+            #parts-links-grid { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+            #footer-browse-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
+            #footer-locations-col { border-left: none; border-right: none; padding-left: 0; padding-right: 0; }
+            #footer-locations-grid { grid-template-columns: repeat(3, 1fr); font-size: 13px; }
+            main .container, section .container { padding-left: 1rem; padding-right: 1rem; }
+        }
+    </style>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+    <style>
+        .filter-panel-title {
+            font-family: "Roboto Condensed", sans-serif;
+            font-size: 18px; font-weight: 400; line-height: normal;
+            color: rgb(6, 103, 210);
+            margin-bottom: 5px;
+        }
+        .chosen-container .chosen-single {
+            font-family: "Roboto Condensed", sans-serif;
+            font-size: 18px; font-weight: 200; line-height: normal;
+            color: rgb(68, 68, 68);
+            height: 38px;
+            line-height: 36px;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: none;
+        }
+        .chosen-container .chosen-results li {
+            font-family: "Roboto Condensed", sans-serif;
+            font-size: 16px; font-weight: 200;
+        }
+        .filter-accordion-btn {
+            font-family: "Roboto Condensed", sans-serif;
+            font-size: 16px; font-weight: 200; line-height: 25.6px;
+            color: rgb(34, 34, 34);
+            background: none; border: none; width: 100%; text-align: left;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+        }
+        .filter-accordion-btn:focus { outline: none; }
+        .filter-checkbox-label {
+            font-family: "Roboto Condensed", sans-serif;
+            font-size: 16px; font-weight: 200; line-height: 24px;
+            cursor: pointer;
+            color: rgb(6, 103, 210);
+        }
+        .filter-accordion-btn.collapsed .fa-chevron-down {
+            transform: rotate(-90deg);
+            transition: transform 0.2s;
+        }
+        .filter-accordion-btn:not(.collapsed) .fa-chevron-down {
+            transform: rotate(0deg);
+            transition: transform 0.2s;
+        }
+    </style>
+    <noscript>
+        <style>
+            .accordion-collapse.collapse { display: block !important; }
+        </style>
+    </noscript>
+</head>
+<body class="bg-white text-vander-text overflow-y-auto" style="height: auto;">
+    <!-- Global Header -->
+    <header class="bg-vander-navy text-white relative z-50">
+<!-- Top Utility Bar (desktop/tablet only) -->
+<div class="hidden md:flex container mx-auto px-4 py-2 justify-between items-center border-b border-blue-900">
+<div class="flex items-center space-x-4">
+<button class="flex items-center space-x-2 hover:text-gray-300">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<a class="flex items-center" href="/">
+<img alt="Vander Haag's Logo" class="h-10" src="http://127.0.0.1:8000/images/logo.png">
+</a>
+</div>
+<form class="flex-1 max-w-2xl mx-8 relative h-10" method="GET" action="http://127.0.0.1:8000/shop">
+<input name="search" value="" class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed bg-white" placeholder="Search by part #, cross reference, keyword..." style="font-size: 20px; font-weight: 400; height: 40px; color: rgba(0, 0, 0, 0.75); background-color: #ffffff;" type="text">
+<button type="submit" class="absolute right-0 top-0 bottom-0 bg-blue-600 px-6 rounded-r-full hover:bg-blue-700 transition-colors">
+<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</form>
+<div class="flex items-center space-x-4 font-condensed" style="font-size: 18px; font-weight: 400; line-height: 75px; color: #fff;">
+<a class="hover:text-gray-300" href="/contactus.php">Email Us</a>
+<span class="text-gray-400">|</span>
+<a class="hover:text-gray-300" href="tel:1-888-940-5030">Call Us</a>
+<span class="text-gray-400">|</span>
+<a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
+<span class="text-gray-400">|</span>
+<a class="flex items-center hover:text-gray-300" href="http://127.0.0.1:8000/cart">
+<svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="bg-gray-200 text-vander-navy rounded-full px-2 py-0.5 text-xs font-bold font-sans">0</span>
+</a>
+</div>
+</div>
+<!-- Main Navigation (desktop/tablet only) -->
+<nav class="hidden md:flex container mx-auto px-4 justify-between items-center h-12">
+<div class="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer font-condensed" style="font-size: 18px; font-weight: 400; line-height: 30px; color: #fff;">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Add Vehicles to Filter</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="flex space-x-8 font-condensed" style="font-size: 22px; font-weight: 400; line-height: 30px; color: #fff;">
+<a class="hover:text-gray-300 flex items-center" href="/truckparts.php">Truck Parts <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+<a class="hover:text-gray-300 flex items-center" href="/trucks.php">Units <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+<a class="hover:text-gray-300 flex items-center" href="/equipmentparts.php">Equipment Parts <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+<a class="hover:text-gray-300 flex items-center" href="/service.php">Service/Repair <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+</div>
+<div class="flex items-center text-red-400 hover:text-red-300 cursor-pointer font-condensed" style="font-size: 18px; font-weight: 400; line-height: 30px; color: #fff;">
+<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" style="color: rgb(190, 81, 81);"><path clip-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" fill-rule="evenodd"></path></svg>
+<span class="">Select a Location</span>
+<svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: rgb(190, 81, 81);"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</nav>
+
+<!-- MOBILE-ONLY HEADER -->
+<div class="md:hidden">
+  <!-- Row 1: menu, logo, sign in, cart -->
+  <div class="flex justify-between items-center px-4 py-2 border-b border-blue-900">
+    <div class="flex items-center gap-3">
+      <button aria-label="Open menu" id="mobile-menu-toggle">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+      <a href="/"><img alt="Vander Haag's Logo" class="h-8" src="http://127.0.0.1:8000/images/logo.png"></a>
+    </div>
+    <div class="flex items-center gap-2 font-condensed text-sm" style="color:#fff;">
+      <a class="hover:text-gray-300" href="/login.php">Sign In/Register</a>
+      <span class="text-gray-400">|</span>
+      <a class="relative flex items-center hover:text-gray-300" href="http://127.0.0.1:8000/cart">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        <span class="bg-gray-200 text-vander-navy rounded-full px-1.5 py-0.5 text-xs font-bold font-sans ml-1">0</span>
+      </a>
+    </div>
+  </div>
+  <!-- Row 2: search bar, full width -->
+  <form class="px-4 py-3" method="GET" action="http://127.0.0.1:8000/shop">
+    <div class="relative h-10">
+      <input name="search" value="" class="w-full rounded-l-full py-2 pl-4 pr-10 focus:outline-none font-condensed text-sm bg-white" placeholder="Search by part #, cross reference, keyword" style="height:40px; color: rgba(0,0,0,0.75); background-color: #ffffff;" type="text">
+      <button type="submit" class="absolute right-0 top-0 bottom-0 bg-blue-600 px-4 rounded-r-full">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+    </div>
+  </form>
+  <!-- Row 3: Add Vehicles to Filter / Select a Location -->
+  <div class="flex justify-between items-center px-4 py-2 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
+    <div class="flex items-center gap-1">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      <span>Add Vehicles to Filter</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+    </div>
+  </div>
+  <div class="flex justify-end items-center px-4 pb-2 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
+    <div class="flex items-center gap-1" style="color: rgb(190, 81, 81);">
+      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" fill-rule="evenodd"></path></svg>
+      <span>Select a Location</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+    </div>
+  </div>
+  <!-- Row 4: Truck Parts / Units / Equipment Parts -->
+  <div class="flex justify-around items-center px-2 py-2 border-t border-blue-900 font-condensed" style="font-size:16px; font-weight:400; line-height:30px; color:#fff;">
+    <a class="flex items-center gap-1" href="/truckparts.php">Truck Parts <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+    <a class="flex items-center gap-1" href="/trucks.php">Units <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+    <a class="flex items-center gap-1" href="/equipmentparts.php">Equipment Parts <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></a>
+  </div>
+</div>
+</header>
+
+    <!-- Breadcrumb Start -->
+        <div class="container-fluid py-5 bg-light">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="http://127.0.0.1:8000">Home</a></li>
+                                    <li class="breadcrumb-item active">Shop</li>
+                        </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+        <!-- Breadcrumb End -->
+
+    <!-- Display Flash Messages -->
+    
+    
+    <!-- Main Content -->
+    <div class="container-fluid py-5 px-5">
+    <div class="row">
+        <!-- ═══════════════════════════════════════════════════════════════
+             Sidebar Filters — single GET form, auto-submits on change
+             ═══════════════════════════════════════════════════════════════ -->
+        <div class="col-lg-3 mb-4">
+            
+            <div class="mb-4">
+                                
+                <div class="mb-3">
+                    <div class="filter-panel-title">Unit Type</div>
+                    <select id="unit-type-select" class="chosen-select w-100">
+                        <option value="http://127.0.0.1:8000/shop">All Unit Types</option>
+                                                    <option value="http://127.0.0.1:8000/category/electronics" >
+                                Electronics
+                            </option>
+                                                    <option value="http://127.0.0.1:8000/category/fashion" >
+                                Fashion
+                            </option>
+                                                    <option value="http://127.0.0.1:8000/category/home-garden" >
+                                Home &amp; Garden
+                            </option>
+                                                    <option value="http://127.0.0.1:8000/category/sports" >
+                                Sports
+                            </option>
+                                                    <option value="http://127.0.0.1:8000/category/Trucks" >
+                                Trucks
+                            </option>
+                                            </select>
+                </div>
+
+                <div class="mb-3">
+                    <div class="filter-panel-title">Manufacturer</div>
+                    <select class="chosen-select w-100">
+                        <option value="">(All)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <div class="filter-panel-title">Model</div>
+                    <select class="chosen-select w-100">
+                        <option value="">(All)</option>
+                    </select>
+                </div>
+
+                <div class="d-grid mt-3">
+                    <a href="http://127.0.0.1:8000/shop" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+                </div>
+            </div>
+
+            <form
+                method="GET"
+                action="http://127.0.0.1:8000/shop"
+                id="sidebar-filter-form"
+            >
+                
+                                
+                <h5 class="mb-4 d-none">Filter Products</h5>
+
+                
+                                <div class="accordion" id="filtersAccordion">
+                    
+                    
+                                                            <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingSubcat">
+                            <button class="filter-accordion-btn " type="button" data-bs-toggle="collapse" data-bs-target="#collapseSubcat" aria-expanded="true" aria-controls="collapseSubcat">
+                                Category <i class="fa fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapseSubcat" class="accordion-collapse collapse show" aria-labelledby="headingSubcat">
+                            <div class="accordion-body pt-0 pb-3 px-0">
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Bus"
+                                            id="subcat-0"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-0">
+                                            Bus
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Cab &amp; Chassis, Single Axle"
+                                            id="subcat-1"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-1">
+                                            Cab &amp; Chassis, Single Axle
+                                            <span class="text-muted">(5)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Cab &amp; Chassis, Tandem Axle"
+                                            id="subcat-2"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-2">
+                                            Cab &amp; Chassis, Tandem Axle
+                                            <span class="text-muted">(12)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Dump, Heavy Duty"
+                                            id="subcat-3"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-3">
+                                            Dump, Heavy Duty
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Dump, Single Axle"
+                                            id="subcat-4"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-4">
+                                            Dump, Single Axle
+                                            <span class="text-muted">(6)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Flatbed Truck"
+                                            id="subcat-5"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-5">
+                                            Flatbed Truck
+                                            <span class="text-muted">(5)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Garbage/Roll Off/Refuse"
+                                            id="subcat-6"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-6">
+                                            Garbage/Roll Off/Refuse
+                                            <span class="text-muted">(4)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Grain/Farm Truck"
+                                            id="subcat-7"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-7">
+                                            Grain/Farm Truck
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Plow/Spreader TRUCK"
+                                            id="subcat-8"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-8">
+                                            Plow/Spreader TRUCK
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Plow/Spreader Truck"
+                                            id="subcat-9"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-9">
+                                            Plow/Spreader Truck
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Tractor, Single Axle"
+                                            id="subcat-10"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-10">
+                                            Tractor, Single Axle
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Tractor, Tandem Axle Day Cab"
+                                            id="subcat-11"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-11">
+                                            Tractor, Tandem Axle Day Cab
+                                            <span class="text-muted">(20)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Tractor, Tandem Axle Sleeper Cab"
+                                            id="subcat-12"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-12">
+                                            Tractor, Tandem Axle Sleeper Cab
+                                            <span class="text-muted">(3)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Vans, Cube &amp; Step"
+                                            id="subcat-13"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-13">
+                                            Vans, Cube &amp; Step
+                                            <span class="text-muted">(7)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="subcategory[]"
+                                            value="Yard Spotter/Shag"
+                                            id="subcat-14"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="subcat-14">
+                                            Yard Spotter/Shag
+                                            <span class="text-muted">(4)</span>
+                                        </label>
+                                    </div>
+                                                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                                                            <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingYear">
+                            <button class="filter-accordion-btn " type="button" data-bs-toggle="collapse" data-bs-target="#collapseYear" aria-expanded="true" aria-controls="collapseYear">
+                                Year <i class="fa fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapseYear" class="accordion-collapse collapse show" aria-labelledby="headingYear">
+                            <div class="accordion-body pt-0 pb-3 px-0">
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="1999"
+                                            id="year-1999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-1999">
+                                            1999
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2003"
+                                            id="year-2003"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2003">
+                                            2003
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2005"
+                                            id="year-2005"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2005">
+                                            2005
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2006"
+                                            id="year-2006"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2006">
+                                            2006
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2007"
+                                            id="year-2007"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2007">
+                                            2007
+                                            <span class="text-muted">(4)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2009"
+                                            id="year-2009"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2009">
+                                            2009
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2011"
+                                            id="year-2011"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2011">
+                                            2011
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2012"
+                                            id="year-2012"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2012">
+                                            2012
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2015"
+                                            id="year-2015"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2015">
+                                            2015
+                                            <span class="text-muted">(3)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2016"
+                                            id="year-2016"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2016">
+                                            2016
+                                            <span class="text-muted">(7)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2017"
+                                            id="year-2017"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2017">
+                                            2017
+                                            <span class="text-muted">(7)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2018"
+                                            id="year-2018"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2018">
+                                            2018
+                                            <span class="text-muted">(7)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2019"
+                                            id="year-2019"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2019">
+                                            2019
+                                            <span class="text-muted">(10)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2020"
+                                            id="year-2020"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2020">
+                                            2020
+                                            <span class="text-muted">(8)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2021"
+                                            id="year-2021"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2021">
+                                            2021
+                                            <span class="text-muted">(8)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2022"
+                                            id="year-2022"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2022">
+                                            2022
+                                            <span class="text-muted">(6)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2023"
+                                            id="year-2023"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2023">
+                                            2023
+                                            <span class="text-muted">(3)</span>
+                                        </label>
+                                    </div>
+                                                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="year[]"
+                                            value="2024"
+                                            id="year-2024"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="year-2024">
+                                            2024
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                                                            <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingMileage">
+                            <button class="filter-accordion-btn " type="button" data-bs-toggle="collapse" data-bs-target="#collapseMileage" aria-expanded="true" aria-controls="collapseMileage">
+                                Mileage <i class="fa fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapseMileage" class="accordion-collapse collapse show" aria-labelledby="headingMileage">
+                            <div class="accordion-body pt-0 pb-3 px-0">
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="na"
+                                            id="mileage-na"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-na">
+                                            N/A
+                                            <span class="text-muted">(6)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="0-99999"
+                                            id="mileage-0-99999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-0-99999">
+                                            0–99,999
+                                            <span class="text-muted">(15)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="100000-199999"
+                                            id="mileage-100000-199999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-100000-199999">
+                                            100,000–199,999
+                                            <span class="text-muted">(15)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="200000-299999"
+                                            id="mileage-200000-299999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-200000-299999">
+                                            200,000–299,999
+                                            <span class="text-muted">(13)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="300000-399999"
+                                            id="mileage-300000-399999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-300000-399999">
+                                            300,000–399,999
+                                            <span class="text-muted">(9)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="400000-499999"
+                                            id="mileage-400000-499999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-400000-499999">
+                                            400,000–499,999
+                                            <span class="text-muted">(7)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="500000-599999"
+                                            id="mileage-500000-599999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-500000-599999">
+                                            500,000–599,999
+                                            <span class="text-muted">(5)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="600000-699999"
+                                            id="mileage-600000-699999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-600000-699999">
+                                            600,000–699,999
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="800000-899999"
+                                            id="mileage-800000-899999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-800000-899999">
+                                            800,000–899,999
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="mileage[]"
+                                            value="900000-999999"
+                                            id="mileage-900000-999999"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="mileage-900000-999999">
+                                            900,000–999,999
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                                                            <div class="accordion-item border-0 border-bottom">
+                        <h2 class="accordion-header" id="headingHp">
+                            <button class="filter-accordion-btn " type="button" data-bs-toggle="collapse" data-bs-target="#collapseHp" aria-expanded="true" aria-controls="collapseHp">
+                                Horsepower <i class="fa fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapseHp" class="accordion-collapse collapse show" aria-labelledby="headingHp">
+                            <div class="accordion-body pt-0 pb-3 px-0">
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="na"
+                                            id="horsepower-na"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-na">
+                                            N/A
+                                            <span class="text-muted">(3)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="150-199"
+                                            id="horsepower-150-199"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-150-199">
+                                            150–199
+                                            <span class="text-muted">(1)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="200-249"
+                                            id="horsepower-200-249"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-200-249">
+                                            200–249
+                                            <span class="text-muted">(8)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="250-299"
+                                            id="horsepower-250-299"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-250-299">
+                                            250–299
+                                            <span class="text-muted">(12)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="300-349"
+                                            id="horsepower-300-349"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-300-349">
+                                            300–349
+                                            <span class="text-muted">(11)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="350-399"
+                                            id="horsepower-350-399"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-350-399">
+                                            350–399
+                                            <span class="text-muted">(8)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="400-449"
+                                            id="horsepower-400-449"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-400-449">
+                                            400–449
+                                            <span class="text-muted">(12)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="450-499"
+                                            id="horsepower-450-499"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-450-499">
+                                            450–499
+                                            <span class="text-muted">(17)</span>
+                                        </label>
+                                    </div>
+                                                                                                        <div class="form-check">
+                                        <input
+                                            class="form-check-input filter-checkbox"
+                                            type="checkbox"
+                                            name="horsepower[]"
+                                            value="500-549"
+                                            id="horsepower-500-549"
+                                            
+                                        >
+                                        <label class="form-check-label filter-checkbox-label" for="horsepower-500-549">
+                                            500–549
+                                            <span class="text-muted">(2)</span>
+                                        </label>
+                                    </div>
+                                                            </div>
+                        </div>
+                    </div>
+                                    </div>
+
+                <noscript>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+                    </div>
+                </noscript>
+            </form>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             Products Grid
+             ═══════════════════════════════════════════════════════════════ -->
+        <div class="col-lg-9">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4>All Products</h4>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <form method="GET" action="http://127.0.0.1:8000/shop" class="d-flex gap-2 justify-content-md-end">
+                        
+                                                <select name="sort" class="form-select form-select-sm">
+                            <option value="">Sort By</option>
+                            <option value="latest" >Latest</option>
+                            <option value="price-asc" >Price: Low to High</option>
+                            <option value="price-desc" >Price: High to Low</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-m2-106-freightliner-2c40b0ae24.JPG" class="card-img-top" alt="2006 Freightliner M2 106 Truck: Cab &amp; Chassis, Single Axle" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2006 Freightliner M2 106 Truck: Cab &amp; Chassis, Single Axle</h5>
+                                <p class="card-text text-muted small">2006 Freightliner M2 106 Truck: Cab &amp; Chassis, Sin...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$16,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2006-freightliner-m2-106-truck-cab-chassis-single-axle" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="76">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-lt-international-1a37638ff5.JPG" class="card-img-top" alt="2018 International LT Truck: Flatbed Truck" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2018 International LT Truck: Flatbed Truck</h5>
+                                <p class="card-text text-muted small">2018 International LT Truck: Flatbed Truck</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$69,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2018-international-lt-truck-flatbed-truck" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="77">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-t370-kenworth-518e94c4b9.JPG" class="card-img-top" alt="2021 Kenworth T370 Truck: Cab &amp; Chassis, Tandem Axle" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2021 Kenworth T370 Truck: Cab &amp; Chassis, Tandem Axle</h5>
+                                <p class="card-text text-muted small">2021 Kenworth T370 Truck: Cab &amp; Chassis, Tandem Ax...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$64,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2021-kenworth-t370-truck-cab-chassis-tandem-axle" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="78">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-114sd-freightliner-f46ed4e9bd.JPG" class="card-img-top" alt="2017 Freightliner 114SD Truck: Flatbed Truck" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2017 Freightliner 114SD Truck: Flatbed Truck</h5>
+                                <p class="card-text text-muted small">2017 Freightliner 114SD Truck: Flatbed Truck</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$49,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2017-freightliner-114sd-truck-flatbed-truck" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="79">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-m2-106-freightliner-e17a563c25.JPG" class="card-img-top" alt="2016 Freightliner M2 106 Truck: Cab &amp; Chassis, Tandem Axle" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2016 Freightliner M2 106 Truck: Cab &amp; Chassis, Tandem Axle</h5>
+                                <p class="card-text text-muted small">2016 Freightliner M2 106 Truck: Cab &amp; Chassis, Tan...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$54,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2016-freightliner-m2-106-truck-cab-chassis-tandem-axle" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="80">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-m2-106-freightliner-7c90db1a88.JPG" class="card-img-top" alt="2016 Freightliner M2 106 Truck: Flatbed Truck" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2016 Freightliner M2 106 Truck: Flatbed Truck</h5>
+                                <p class="card-text text-muted small">2016 Freightliner M2 106 Truck: Flatbed Truck</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$54,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2016-freightliner-m2-106-truck-flatbed-truck" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="81">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-t880-kenworth-c62daf4484.JPG" class="card-img-top" alt="2021 Kenworth T880 Truck: Cab &amp; Chassis, Tandem Axle" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2021 Kenworth T880 Truck: Cab &amp; Chassis, Tandem Axle</h5>
+                                <p class="card-text text-muted small">2021 Kenworth T880 Truck: Cab &amp; Chassis, Tandem Ax...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$69,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2021-kenworth-t880-truck-cab-chassis-tandem-axle" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="82">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-columbia-120-freightliner-781a0767e9.jpg" class="card-img-top" alt="2007 Freightliner COLUMBIA 120 Truck: Tractor, Tandem Axle Day Cab" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2007 Freightliner COLUMBIA 120 Truck: Tractor, Tandem Axle Day Cab</h5>
+                                <p class="card-text text-muted small">2007 Freightliner COLUMBIA 120 Truck: Tractor, Tan...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$10,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2007-freightliner-columbia-120-truck-tractor-tandem-axle-day-cab" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="83">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-m2-106-freightliner-0feed08b32.jpg" class="card-img-top" alt="2005 Freightliner M2 106 Truck: Flatbed Truck" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2005 Freightliner M2 106 Truck: Flatbed Truck</h5>
+                                <p class="card-text text-muted small">2005 Freightliner M2 106 Truck: Flatbed Truck</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$64,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2005-freightliner-m2-106-truck-flatbed-truck" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="84">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-t800-kenworth-23b76e6e67.jpg" class="card-img-top" alt="2009 Kenworth T800 Truck: Grain/Farm Truck" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2009 Kenworth T800 Truck: Grain/Farm Truck</h5>
+                                <p class="card-text text-muted small">2009 Kenworth T800 Truck: Grain/Farm Truck</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$109,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2009-kenworth-t800-truck-grainfarm-truck" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="85">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-m2-112-freightliner-3e1f817c13.JPG" class="card-img-top" alt="2023 Freightliner M2 112 Truck: Tractor, Tandem Axle Day Cab" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2023 Freightliner M2 112 Truck: Tractor, Tandem Axle Day Cab</h5>
+                                <p class="card-text text-muted small">2023 Freightliner M2 112 Truck: Tractor, Tandem Ax...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$99,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2023-freightliner-m2-112-truck-tractor-tandem-axle-day-cab" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="86">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm">
+                                                            <img src="https://pix.vanderhaags.com/640/truck-vision-blue-bird-2a8d971690.JPG" class="card-img-top" alt="2007 Blue Bird VISION Truck: Bus" style="height: 200px; object-fit: cover;">
+                            
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">2007 Blue Bird VISION Truck: Bus</h5>
+                                <p class="card-text text-muted small">2007 Blue Bird VISION Truck: Bus</p>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary">$6,900.00</span>
+                                                                            </div>
+                                    <small class="badge bg-info">0 in stock</small>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a href="http://127.0.0.1:8000/product/2007-blue-bird-vision-truck-bus" class="btn btn-outline-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white">
+                                <form method="POST" action="http://127.0.0.1:8000/cart/add">
+                                    <input type="hidden" name="_token" value="Qq6xRaOzL1FoOUpi7nNy3BtywsIPZJ5EIdJd8BkF" autocomplete="off">                                    <input type="hidden" name="product_id" value="87">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" name="quantity" class="form-control" value="1" min="1" max="0">
+                                        <button class="btn btn-primary" type="submit">Add</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+
+            <!-- Pagination -->
+                            <div class="row mt-4">
+                    <div class="col-12">
+                        <nav class="d-flex justify-items-center justify-content-between">
+        <div class="d-flex justify-content-between flex-fill d-sm-none">
+            <ul class="pagination">
+                
+                                    <li class="page-item disabled" aria-disabled="true">
+                        <span class="page-link">&laquo; Previous</span>
+                    </li>
+                
+                
+                                    <li class="page-item">
+                        <a class="page-link" href="http://127.0.0.1:8000/shop?page=2" rel="next">Next &raquo;</a>
+                    </li>
+                            </ul>
+        </div>
+
+        <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
+            <div class="small text-muted">
+                Showing
+                <span class="fw-semibold">1</span>
+                to
+                <span class="fw-semibold">12</span>
+                of
+                <span class="fw-semibold">74</span>
+                results
+            </div>
+
+            <div>
+                <ul class="pagination">
+                    
+                                            <li class="page-item disabled" aria-disabled="true" aria-label="&laquo; Previous">
+                            <span class="page-link" aria-hidden="true">&lsaquo;</span>
+                        </li>
+                    
+                    
+                                            
+                        
+                        
+                                                                                                                        <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=2">2</a></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=3">3</a></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=4">4</a></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=5">5</a></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=6">6</a></li>
+                                                                                                                                <li class="page-item"><a class="page-link" href="http://127.0.0.1:8000/shop?page=7">7</a></li>
+                                                                                                        
+                    
+                                            <li class="page-item">
+                            <a class="page-link" href="http://127.0.0.1:8000/shop?page=2" rel="next" aria-label="Next &raquo;">&rsaquo;</a>
+                        </li>
+                                    </ul>
+            </div>
+        </div>
+    </nav>
+
+                    </div>
+                </div>
+                    </div>
+    </div>
+</div>
+
+
+
+    <!-- Global Footer -->
+    <footer class="bg-white pt-12 pb-0 border-t border-gray-200">
+<div class="container mx-auto px-4">
+<!-- Also Of Interest -->
+<div class="flex items-center mb-8 pb-4 border-b border-gray-200 text-sm">
+<span class="text-gray-500 mr-8 whitespace-nowrap">ALSO OF INTEREST</span>
+<div class="flex space-x-6 text-gray-700">
+<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/Search-Results.php?inventorytype=engine-assembly">Quality Inspected Used Engines</a>
+<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/service.php">Semi Truck Service &amp; Repair</a>
+<a class="hover:text-[#0751b1]" href="https://www.vanderhaags.com/Search-Results.php?inventorytype=transmission">Quality Inspected Used/Rebuilt Transmissions</a>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+<!-- Browse Online -->
+<div class="md:col-span-1">
+<h3 class="text-lg text-gray-700 mb-4 pb-2 border-b border-gray-200">Browse Online</h3>
+<div id="footer-browse-grid" class="grid grid-cols-2 gap-x-4 gap-y-2 pr-4" style="font-family: &quot;Roboto Condensed&quot;, sans-serif; font-size: 16px; font-weight: 400; text-align: justify; line-height: 24px; color: rgb(51, 48, 48);">
+
+<a class="hover:underline text-[#333030]" href="/aboutus.php">About Us</a>
+<a class="hover:underline text-[#333030]" href="/Search-Results.php?inventorytype=truck">Trucks &amp; Trailers</a>
+<a class="hover:underline text-[#333030]" href="http://127.0.0.1:8000/cart">Cart</a>
+<a class="hover:underline text-[#333030]" href="/help.php">FAQ / Help</a>
+<a class="hover:underline text-[#333030]" href="/equipmentparts.php">Equipment Parts</a>
+<a class="hover:underline text-[#333030]" href="/Catalog/Flyer.pdf">Catalog</a>
+<a class="hover:underline text-[#333030]" href="/contactus.php">Contact Us</a>
+<a class="hover:underline text-[#333030]" href="/sell-your-truck.php">We Buy Trucks</a>
+<a class="hover:underline text-[#333030]" href="http://www.yesterdaysmemories.us/">Museum</a>
+<a class="hover:underline text-[#333030]" href="/employment.php">Employment</a>
+<a class="hover:underline text-[#333030]" href="/shippingandreturns.php">Shipping &amp; Returns</a>
+<a class="hover:underline text-[#333030]" href="/warranty.php">Warranty</a>
+<a class="hover:underline text-[#333030]" href="/account/ordersearch.php">Order Search</a>
+<a class="hover:underline text-[#333030]" href="/login.php">Log In / Account</a>
+<a class="hover:underline text-[#333030]" href="/service.php">Service</a>
+<a class="hover:underline text-[#333030]" href="/truckparts.php">Truck Parts</a>
+<a class="hover:underline text-[#333030]" href="tel:1-888-940-5030">888.940.5030</a>
+</div>
+</div>
+<!-- Our Locations -->
+<div id="footer-locations-col" class="md:col-span-2 pl-8 border-l border-gray-200 border-r pr-8">
+<div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-200">
+<h3 class="text-lg text-gray-700">Our Locations</h3>
+<a class="text-sm text-[#0751b1] hover:underline flex items-center" href="/map.php">View Map <i class="fa fa-external-link ml-1"></i></a>
+</div>
+<p class="text-sm text-gray-600 mb-4">
+          While Vander Haag's, Inc still holds strong to its family focused values that have been at the core of the business since first opening in 1939, the company now features 12 Midwest locations selling quality used/rebuilt/new truck parts, selling commercial trucks &amp; trailers, and providing full service heavy duty truck repair.
+        </p>
+<div id="footer-locations-grid" class="grid grid-cols-4 gap-y-2 text-sm text-[#0751b1]">
+<a class="hover:underline" href="/location.php?store=Spencer"><i class="fa fa-map-marker text-red-600 mr-1"></i> Spencer, IA</a>
+<a class="hover:underline" href="/location.php?store=Des+Moines"><i class="fa fa-map-marker text-red-600 mr-1"></i> Des Moines, IA</a>
+<a class="hover:underline" href="/location.php?store=Sioux+Falls"><i class="fa fa-map-marker text-red-600 mr-1"></i> Sioux Falls, SD</a>
+<a class="hover:underline" href="/location.php?store=Council+Bluffs"><i class="fa fa-map-marker text-red-600 mr-1"></i> Council Bluffs, IA</a>
+<a class="hover:underline" href="/location.php?store=Kansas+City"><i class="fa fa-map-marker text-red-600 mr-1"></i> Kansas City, MO</a>
+<a class="hover:underline" href="/location.php?store=Winamac"><i class="fa fa-map-marker text-red-600 mr-1"></i> Winamac, IN</a>
+<a class="hover:underline" href="/location.php?store=Indianapolis"><i class="fa fa-map-marker text-red-600 mr-1"></i> Indianapolis, IN</a>
+<a class="hover:underline" href="/location.php?store=Columbus"><i class="fa fa-map-marker text-red-600 mr-1"></i> London, OH</a>
+<a class="hover:underline" href="/location.php?store=Louisville"><i class="fa fa-map-marker text-red-600 mr-1"></i> Louisville, KY</a>
+<a class="hover:underline" href="/location.php?store=Dallas"><i class="fa fa-map-marker text-red-600 mr-1"></i> Dallas, TX</a>
+<a class="hover:underline" href="/location.php?store=St+Louis"><i class="fa fa-map-marker text-red-600 mr-1"></i> Bridgeton, MO</a>
+<a class="hover:underline" href="/location.php?store=Stephenville"><i class="fa fa-map-marker text-red-600 mr-1"></i> Stephenville, TX</a>
+</div>
+</div>
+<!-- Connect -->
+<div class="md:col-span-1">
+<div class="flex items-center mb-4 pb-2 border-b border-gray-200">
+<h3 class="text-lg text-gray-700 mr-4">Connect</h3>
+<div class="flex space-x-2">
+<a class="bg-[#3b5998] text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="https://www.facebook.com/VanderHaagsInc"><i class="fa fa-facebook"></i></a>
+<a class="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="https://www.instagram.com/vanderhaagsinc"><i class="fa fa-instagram"></i></a>
+<a class="bg-[#0077b5] text-white w-8 h-8 rounded flex items-center justify-center hover:opacity-80" href="http://www.linkedin.com/company/vander-haag's-inc-?trk=company_name"><i class="fa fa-linkedin"></i></a>
+</div>
+</div>
+<div class="mt-6">
+<p class="text-xs text-gray-500 mb-2">Subscribe for promotional content</p>
+<input class="w-full bg-gray-200 border-none rounded py-2 px-3 mb-3 text-sm focus:ring-0" placeholder="Email Address" type="email">
+<button class="bg-[#0751b1] text-white font-medium py-2 px-6 rounded hover:bg-blue-700 text-sm">Subscribe</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Copyright -->
+<div class="bg-[#0b3366] text-white text-center py-3 text-xs">
+    © Vander Haag's Inc. 2026 - <a class="hover:underline" href="/privacy.php">Privacy Policy</a>
+</div>
+</footer>
+<!-- Floating Contact Button -->
+<div class="fixed bottom-0 right-0 z-50">
+<a href="https://signal.me/#p/+13125266921" target="_blank" rel="noopener noreferrer" class="bg-vander-orange hover:bg-orange-600 text-white font-bold py-4 px-6 flex items-center shadow-lg rounded-tl-lg transition-colors floating-signal-button">
+<svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path clip-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" fill-rule="evenodd"></path></svg>
+      CONTACT
+    </a>
+</div>
+
+    <!-- Bootstrap JS -->
+    <script src="http://127.0.0.1:8000/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="http://127.0.0.1:8000/js/app.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+<script>
+    // Use jQuery's ready handler — it fires immediately if the DOM is already loaded
+    jQuery(function ($) {
+        // Initialize Chosen dropdowns
+        $('.chosen-select').chosen({width: "100%", disable_search_threshold: 10});
+
+        // Wire up the Unit Type dropdown via jQuery so Chosen's change event propagates
+        $('#unit-type-select').on('change', function () {
+            var url = $(this).val();
+            if (url) {
+                window.location = url;
+            }
+        });
+
+        // Manual accordion toggle (works even if Bootstrap collapse misfires)
+        document.querySelectorAll('.filter-accordion-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var targetSelector = btn.getAttribute('data-bs-target');
+                var target = document.querySelector(targetSelector);
+                if (!target) return;
+
+                var isOpen = target.classList.contains('show');
+                if (isOpen) {
+                    target.classList.remove('show');
+                    btn.classList.add('collapsed');
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    target.classList.add('show');
+                    btn.classList.remove('collapsed');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        // Auto-submit sidebar form on checkbox change
+        var form = document.getElementById('sidebar-filter-form');
+        if (!form) return;
+        var checkboxes = form.querySelectorAll('.filter-checkbox');
+        checkboxes.forEach(function (cb) {
+            cb.addEventListener('change', function () {
+                form.submit();
+            });
+        });
+    });
+</script>
+</body>
+</html>
+
