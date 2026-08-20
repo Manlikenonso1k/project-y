@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\TelegramNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,11 @@ use Illuminate\Support\Facades\Log;
 
 class BlockonomicsWebhookController extends Controller
 {
+    public function __construct(
+        private readonly TelegramNotificationService $telegramNotificationService,
+    ) {
+    }
+
     public function handle(Request $request): JsonResponse
     {
         $this->assertCallbackIsAuthorized($request);
@@ -48,7 +54,9 @@ class BlockonomicsWebhookController extends Controller
             return response()->json(['ok' => true, 'replayed' => true]);
         }
 
-        DB::transaction(function () use ($order, $payload, $payloadHash): void {
+        $paymentWasConfirmed = false;
+
+        DB::transaction(function () use ($order, $payload, $payloadHash, &$paymentWasConfirmed): void {
             DB::table('blockonomics_callbacks')->insert([
                 'order_id' => $order->id,
                 'payload_hash' => $payloadHash,
@@ -80,6 +88,7 @@ class BlockonomicsWebhookController extends Controller
                     $order->payment_status = 'underpaid';
                 } else {
                     $order->payment_status = 'paid';
+                    $paymentWasConfirmed = true;
 
                     if ($order->status === 'pending') {
                         $order->status = 'processing';
@@ -91,6 +100,19 @@ class BlockonomicsWebhookController extends Controller
 
             $order->save();
         });
+
+        if ($paymentWasConfirmed) {
+            $sent = $this->telegramNotificationService->sendBitcoinPaymentConfirmedNotification(
+                $order,
+                (int) ($payload['value'] ?? 0),
+                $payload['txid'] ?? null,
+            );
+
+            Log::info('Telegram Bitcoin-payment notification processed.', [
+                'order_id' => $order->id,
+                'sent' => $sent,
+            ]);
+        }
 
         return response()->json(['ok' => true]);
     }

@@ -41,4 +41,9 @@ return [
         'callback_ips' => env('BLOCKONOMICS_CALLBACK_IPS', ''),
     ],
 
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
 ];

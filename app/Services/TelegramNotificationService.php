@@ -41,6 +41,27 @@ class TelegramNotificationService
         return $this->sendMessage($message);
     }
 
+    /**
+     * Notify staff only after a Bitcoin payment has reached final confirmation.
+     */
+    public function sendBitcoinPaymentConfirmedNotification(Order $order, int $valueSatoshi, ?string $txid): bool
+    {
+        $amountBtc = number_format($valueSatoshi / 100_000_000, 8, '.', '');
+        $message = "*BITCOIN PAYMENT CONFIRMED*\n\n";
+        $message .= "*Order #:* `{$order->order_number}`\n";
+        $message .= "*Customer:* {$order->first_name} {$order->last_name}\n";
+        $message .= "*Amount:* {$amountBtc} BTC\n";
+        $message .= "*Order Total:* \${$order->total}\n";
+
+        if ($txid) {
+            $message .= "*Transaction:* `{$txid}`\n";
+        }
+
+        $message .= "*Status:* Paid";
+
+        return $this->sendMessage($message);
+    }
+
     private function sendMessage($text)
     {
         if (empty($this->botToken) || empty($this->chatId)) {
