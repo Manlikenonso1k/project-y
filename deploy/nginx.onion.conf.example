@@ -8,6 +8,7 @@ server {
 
     access_log /var/log/nginx/project-x.access.log;
     error_log /var/log/nginx/project-x.error.log;
+    client_max_body_size 32m;
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;

@@ -21,6 +21,9 @@ WORKDIR /var/www/projectx
 # Copy application files
 COPY . .
 
+# Match the gift-card form limits: several images are submitted together.
+RUN printf "upload_max_filesize=12M\npost_max_size=32M\nmax_file_uploads=10\nmax_execution_time=120\nmax_input_time=120\n" > /usr/local/etc/php/conf.d/uploads.ini
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 

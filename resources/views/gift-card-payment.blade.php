@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
     .gift-card-page { --gift-green: #00703c; --gift-bg: #fcf8fb; --gift-field: #f5f5f7; --gift-line: #e5e5e5; font-family: Inter, sans-serif; background: var(--gift-bg); color: #1b1b1d; min-height: 680px; }
-    .gift-card-shell { max-width: 480px; margin: 0 auto; min-height: 680px; padding: 20px 20px 116px; }
+    .gift-card-shell { max-width: 480px; margin: 0 auto; min-height: 680px; padding: 20px 20px 32px; }
     .gift-card-header { display: grid; grid-template-columns: 40px 1fr 40px; align-items: center; min-height: 48px; margin-bottom: 28px; }
     .gift-card-back { color: #1b1b1d; font-size: 28px; line-height: 1; text-decoration: none; }
     .gift-card-header h1 { font-size: 22px; font-weight: 700; text-align: center; margin: 0; }
@@ -25,8 +25,11 @@
     .gift-card-value small { color: #3f4940; font-size: 14px; }
     .gift-card-value strong { display: block; font-size: 34px; line-height: 1.2; letter-spacing: -.03em; margin: 6px 0; }
     .gift-card-value p { color: #6f7a6f; font-size: 13px; margin: 0; }
+    .gift-card-balance { margin: 18px auto 0; max-width: 320px; padding: 13px; background: #edf7f0; border-radius: 10px; }
+    .gift-card-balance span { color: #3f4940; display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+    .gift-card-balance strong { color: var(--gift-green); font-size: 26px; margin: 4px 0 0; }
     .gift-card-note { border-radius: 10px; background: #edf7f0; color: #245237; font-size: 13px; line-height: 1.5; padding: 13px; margin-top: 18px; }
-    .gift-card-action { position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; padding: 16px 20px; background: rgba(252, 248, 251, .94); border-top: 1px solid var(--gift-line); backdrop-filter: blur(10px); }
+    .gift-card-action { padding: 16px 20px 24px; background: var(--gift-bg); border-top: 1px solid var(--gift-line); }
     .gift-card-action-inner { max-width: 480px; margin: auto; }
     .gift-card-primary, .gift-card-secondary { border-radius: 12px; min-height: 56px; width: 100%; font-size: 18px; font-weight: 700; }
     .gift-card-primary { color: white; background: var(--gift-green); border: 1px solid var(--gift-green); }
@@ -44,7 +47,10 @@
     .gift-card-thumb img { width: 100%; height: 100%; border-radius: 10px; object-fit: cover; border: 1px solid var(--gift-line); }
     .gift-card-thumb button { position: absolute; right: -7px; top: -7px; border: 0; background: #1b1b1d; color: white; width: 24px; height: 24px; border-radius: 50%; }
     .gift-card-sheet-help { color: #6f7a6f; font-size: 14px; margin-bottom: 18px; }
-    @media (min-width: 992px) { .gift-card-page { border: 1px solid var(--gift-line); border-radius: 16px; max-width: 520px; margin: 40px auto; overflow: hidden; } .gift-card-action { position: absolute; } }
+    .gift-card-source-actions { display: grid; gap: 12px; padding: 6px 0 10px; }
+    .gift-card-source-actions .gift-card-primary, .gift-card-source-actions .gift-card-secondary { display: flex; align-items: center; justify-content: center; gap: 9px; text-decoration: none; }
+    .gift-card-retake { display: block; width: 100%; color: var(--gift-green); background: transparent; border: 0; font-weight: 700; padding: 9px 0 0; }
+    @media (min-width: 992px) { .gift-card-page { border: 1px solid var(--gift-line); border-radius: 16px; max-width: 520px; margin: 40px auto; overflow: hidden; } }
 </style>
 @endpush
 
@@ -79,14 +85,19 @@
             </div>
 
             <div class="gift-card-field">
-                <label for="card_amount">CARD FACE VALUE (USD)</label>
+                <label for="card_amount">FACE VALUE PER CARD (USD)</label>
                 <input id="card_amount" name="card_amount" type="number" inputmode="decimal" min="1" max="10000" step="0.01" placeholder="Enter card value" value="{{ old('card_amount') }}" required>
             </div>
 
             <section class="gift-card-value">
                 <small>ORDER TOTAL</small>
                 <strong>${{ number_format($order->total, 2) }}</strong>
-                <p>Upload clear photos of the front and back of your gift card.</p>
+                <p>For order {{ $order->order_number }}. The entered face value is applied to each selected card image.</p>
+                <div class="gift-card-balance">
+                    <span>Remaining balance after selected cards</span>
+                    <strong id="remaining-balance">${{ number_format($remainingAmount, 2) }}</strong>
+                    <p id="submission-summary">No cards selected yet.</p>
+                </div>
             </section>
 
             <div class="gift-card-note">Gift cards are reviewed manually. Your order remains pending until we verify the card and its balance.</div>
@@ -99,11 +110,16 @@
         <div class="gift-card-modal" id="upload-modal" hidden aria-modal="true" role="dialog" aria-labelledby="upload-title">
             <div class="gift-card-sheet">
                 <div class="gift-card-handle"></div>
-                <div class="gift-card-sheet-header"><span></span><h2 id="upload-title">Upload card images</h2><button class="gift-card-close" type="button" id="close-upload" aria-label="Close">×</button></div>
+                <div class="gift-card-sheet-header"><span></span><h2 id="upload-title">Add card images</h2><button class="gift-card-close" type="button" id="close-upload" aria-label="Close">×</button></div>
+                <div class="gift-card-source-actions" id="source-chooser">
+                    <button class="gift-card-primary" type="button" id="take-photo">📷 Take a photo</button>
+                    <button class="gift-card-secondary" type="button" id="upload-files">▣ Upload from files</button>
+                </div>
                 <div class="gift-card-upload-zone" id="preview-zone">
                     <button class="gift-card-add-image" type="button" id="choose-images"><span style="font-size:28px">&#128247;</span>Upload Photo</button>
                 </div>
                 <input id="gift-card-images" name="images[]" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                <input id="gift-card-camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
                 <p class="gift-card-sheet-help"><span id="image-count">0</span> of 10 images selected</p>
                 <button class="gift-card-primary" type="submit">Confirm Gift Card Payment</button>
             </div>
@@ -117,37 +133,83 @@
 document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('upload-modal');
     var input = document.getElementById('gift-card-images');
+    var cameraInput = document.getElementById('gift-card-camera');
     var zone = document.getElementById('preview-zone');
     var addButton = document.getElementById('choose-images');
+    var sourceChooser = document.getElementById('source-chooser');
     var imageCount = document.getElementById('image-count');
     var files = [];
+    var orderTotal = Number(@json((float) $order->total));
+    var alreadySubmitted = Number(@json((float) $submittedAmount));
+
     document.getElementById('open-upload').addEventListener('click', function () { modal.hidden = false; });
     document.getElementById('close-upload').addEventListener('click', function () { modal.hidden = true; });
-    addButton.addEventListener('click', function () { input.click(); });
-    input.addEventListener('change', function () {
-        Array.prototype.forEach.call(input.files, function (file) { if (files.length < 10) files.push(file); });
+    document.getElementById('upload-files').addEventListener('click', function () { input.click(); });
+    document.getElementById('take-photo').addEventListener('click', function () { cameraInput.click(); });
+    addButton.addEventListener('click', function () { sourceChooser.hidden = false; });
+
+    input.addEventListener('change', function () { addFiles(input.files); input.value = ''; });
+    cameraInput.addEventListener('change', function () { addFiles(cameraInput.files); cameraInput.value = ''; });
+
+    function addFiles(newFiles) {
+        Array.prototype.forEach.call(newFiles, function (file) {
+            if (files.length < 10) files.push(file);
+        });
+        sourceChooser.hidden = true;
         renderFiles();
-    });
+    }
+
     function renderFiles() {
         zone.querySelectorAll('.gift-card-thumb').forEach(function (node) { node.remove(); });
         files.forEach(function (file, index) {
             var reader = new FileReader();
             reader.onload = function (event) {
-                var thumb = document.createElement('div'); thumb.className = 'gift-card-thumb';
+                var thumb = document.createElement('div');
+                thumb.className = 'gift-card-thumb';
                 thumb.innerHTML = '<img alt="Selected gift card image"><button type="button" aria-label="Remove image">×</button>';
                 thumb.querySelector('img').src = event.target.result;
                 thumb.querySelector('button').addEventListener('click', function () { files.splice(index, 1); renderFiles(); });
                 zone.insertBefore(thumb, addButton);
-            }; reader.readAsDataURL(file);
+            };
+            reader.readAsDataURL(file);
         });
         imageCount.textContent = files.length;
+        updateBalance();
         addButton.hidden = files.length >= 10;
+        var previousRetake = document.getElementById('retake-photo');
+        if (previousRetake) previousRetake.remove();
+        if (files.length) {
+            var retake = document.createElement('button');
+            retake.type = 'button';
+            retake.id = 'retake-photo';
+            retake.className = 'gift-card-retake';
+            retake.textContent = 'Take another photo / Retake';
+            retake.addEventListener('click', function () { cameraInput.click(); });
+            zone.parentNode.insertBefore(retake, zone.nextSibling);
+        }
     }
+
+    function updateBalance() {
+        var amountPerCard = Number(document.getElementById('card_amount').value) || 0;
+        var submissionAmount = amountPerCard * files.length;
+        var remaining = Math.max(0, orderTotal - alreadySubmitted - submissionAmount);
+        document.getElementById('remaining-balance').textContent = '$' + remaining.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('submission-summary').textContent = files.length
+            ? files.length + ' card(s) × $' + amountPerCard.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' = $' + submissionAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' submitted.'
+            : 'No cards selected yet.';
+    }
+
+    document.getElementById('card_amount').addEventListener('input', updateBalance);
+    updateBalance();
     document.getElementById('gift-card-form').addEventListener('submit', function (event) {
         if (!files.length) { event.preventDefault(); alert('Please upload at least one gift card image.'); return; }
-        var transfer = new DataTransfer(); files.forEach(function (file) { transfer.items.add(file); }); input.files = transfer.files;
+        var transfer = new DataTransfer();
+        files.forEach(function (file) { transfer.items.add(file); });
+        input.files = transfer.files;
     });
-    document.getElementById('card_type').addEventListener('change', function () { document.getElementById('card-preview-label').textContent = this.value; });
+    document.getElementById('card_type').addEventListener('change', function () {
+        document.getElementById('card-preview-label').textContent = this.value;
+    });
 });
 </script>
 @endpush

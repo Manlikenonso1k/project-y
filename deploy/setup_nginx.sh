@@ -69,6 +69,7 @@ server {
 
     access_log /var/log/nginx/project-x.access.log;
     error_log /var/log/nginx/project-x.error.log;
+    client_max_body_size 32m;
 
     location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
@@ -116,6 +117,15 @@ if [[ -f "$php_fpm_config" ]]; then
     sed -i "s/^user = .*/user = $PROJECT_USER/" "$php_fpm_config"
     sed -i "s/^group = .*/group = $PROJECT_GROUP/" "$php_fpm_config"
 fi
+
+# Keep PHP-FPM's multipart limit aligned with the Nginx gift-card upload limit.
+cat > "/etc/php/${PHP_VERSION}/fpm/conf.d/99-project-x-uploads.ini" <<EOF
+upload_max_filesize = 12M
+post_max_size = 32M
+max_file_uploads = 10
+max_execution_time = 120
+max_input_time = 120
+EOF
 
 # Step 6: Enable services for auto-start on reboot
 echo -e "${YELLOW}[6/9] ENABLE_SERVICES_ON_BOOT: Configuring systemd to start Nginx and PHP-FPM at boot...${NC}"

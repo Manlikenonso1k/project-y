@@ -12,6 +12,8 @@ class GiftCardSubmission extends Model
         'card_type',
         'card_currency',
         'card_amount',
+        'card_value_per_image',
+        'image_count',
         'status',
         'image_paths',
     ];
@@ -20,6 +22,8 @@ class GiftCardSubmission extends Model
     {
         return [
             'card_amount' => 'decimal:2',
+            'card_value_per_image' => 'decimal:2',
+            'image_count' => 'integer',
             'image_paths' => 'array',
         ];
     }

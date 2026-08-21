@@ -78,7 +78,8 @@ class TelegramNotificationService
         $message .= "*Order #:* `{$order->order_number}`\n";
         $message .= "*Submission #:* `{$submission->id}`\n";
         $message .= "*Card:* {$submission->card_type}\n";
-        $message .= "*Card Value:* \${$submission->card_amount} {$submission->card_currency}\n";
+        $message .= "*Submitted Value:* \${$submission->card_amount} {$submission->card_currency}\n";
+        $message .= "*Cards:* {$submission->image_count} x \${$submission->card_value_per_image}\n";
         $message .= "*Order Total:* \${$order->total}\n";
         $message .= "*Customer:* {$order->first_name} {$order->last_name}\n";
         $message .= "*Status:* Pending review";
